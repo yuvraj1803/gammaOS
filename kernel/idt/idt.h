@@ -4,6 +4,10 @@
 #include <stdint.h>
 
 void idt_init();
+
+extern void __enable_irq();
+extern void __disable_irq();
+
 // interrupt descriptor table entry structure
 struct idt_desc{
     uint16_t offset1;

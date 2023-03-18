@@ -1,6 +1,6 @@
 #include "kernel.h"
 #include "idt/idt.h"
-#include "io/io.h"
+#include "../io/io.h"
 
 
 #define VIDEO_MEM_BASE 0xB8000
@@ -53,9 +53,9 @@ void kinit(){
 
     kclear_display(); // clear the screen
     idt_init(); // initialise interrupt descriptor table
+    __enable_irq(); // enable interrupts
 
-
-    kprintf("yeah, its working");
+    kprintf("yeah, too cool right?");
 
 
 

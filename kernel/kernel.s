@@ -22,8 +22,6 @@ _start:
 	call enable_a20
 	call pic_init
 	
-	sti
-
 	; call the kernel!
 	call kinit
 
