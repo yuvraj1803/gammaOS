@@ -1,5 +1,5 @@
 #include "idt.h"
-#include "../config.h"
+#include "../../config.h"
 #include "../../mm/memory.h"
 #include "../kernel.h"
 #include "../io/io.h"
@@ -41,8 +41,8 @@ void idt_init(){
     idtr_descriptor.limit = sizeof(idt_descriptors) - 1;
     idtr_descriptor.base  = (uint32_t) idt_descriptors;
 
-    for(int i=0;i<TOTAL_INTERRUPTS;i++){
-        idt_set(i, no_inth);
+    for(int _intr=0;_intr<TOTAL_INTERRUPTS;_intr++){
+        idt_set(_intr, no_inth);
     }
 
 

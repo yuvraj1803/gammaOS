@@ -35,6 +35,12 @@ uint32_t kprintf(const char * str){
 
 }
 
+void kpanic(const char* str){
+    kprintf(str);
+    while(1); // halt the kernel at this point.
+}
+
+
 void kclear_display(){
     cursor_x = 0;
     cursor_y = 0;
@@ -49,6 +55,7 @@ void kclear_display(){
 
 void kinit(){
     
+    // initialise video memory
     VIDEO_MEM = (uint16_t*)(VIDEO_MEM_BASE);
 
     kclear_display(); // clear the screen

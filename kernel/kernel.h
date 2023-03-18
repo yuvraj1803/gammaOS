@@ -5,5 +5,6 @@
 
 void init();
 uint32_t kprintf(const char * str);
+void kpanic(const char* str);
 
 #endif
