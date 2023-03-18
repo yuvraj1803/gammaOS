@@ -3,7 +3,6 @@
 
 #include <stdint.h>
 
-
 void init();
 uint32_t kprintf(const char * str);
 

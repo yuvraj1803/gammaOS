@@ -8,7 +8,7 @@ global _start
 extern kinit
 
 _start:
-
+	; init memory segments
 	mov ax, DATA_SEG
 	mov ds, ax
 	mov ss, ax
@@ -24,10 +24,12 @@ _start:
 	
 	sti
 
+	; call the kernel!
 	call kinit
 
 	jmp $
 
+; enables a20 line
 enable_a20:
 	in al, 0x92
 	or al, 2
@@ -35,6 +37,7 @@ enable_a20:
 
 	ret
 
+; initialises programmable interrupt controller
 pic_init:
 
 	; remap master pic
@@ -51,5 +54,5 @@ pic_init:
 
 	ret
 	
-
+; aligns into sector 1
 times 512 - ($ - $$) db 0

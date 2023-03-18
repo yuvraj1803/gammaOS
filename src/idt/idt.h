@@ -4,7 +4,7 @@
 #include <stdint.h>
 
 void idt_init();
-
+// interrupt descriptor table entry structure
 struct idt_desc{
     uint16_t offset1;
     uint16_t selector;
@@ -13,6 +13,8 @@ struct idt_desc{
     uint16_t offset2;
 } __attribute__((packed));
 
+
+// interrupt descriptor table register structure
 struct idtr_desc{
     uint16_t limit;
     uint32_t base;

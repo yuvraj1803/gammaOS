@@ -10,7 +10,8 @@
 uint16_t * VIDEO_MEM;
 uint8_t cursor_x, cursor_y;
 
-uint16_t kgetchx(char c, char color){
+// given a character and its color, returns its hex(char:color) in little endian.
+uint16_t kmake_char(char c, char color){
     return (color << 8) | c;
 }
 
@@ -19,7 +20,7 @@ uint32_t kprintf(const char * str){
 
     while(str[strlen]){
 
-        VIDEO_MEM[cursor_y * VGA_WIDTH + cursor_x] = kgetchx(str[strlen], 0xf);
+        VIDEO_MEM[cursor_y * VGA_WIDTH + cursor_x] = kmake_char(str[strlen], 0xf);
         strlen++;
         cursor_x++;
 
@@ -39,7 +40,7 @@ void kclear_display(){
     cursor_y = 0;
     for(int x=0;x<VGA_WIDTH;x++){
         for(int y=0;y<VGA_HEIGHT;y++){
-            VIDEO_MEM[y*VGA_WIDTH + x] = kgetchx(' ',0);
+            VIDEO_MEM[y*VGA_WIDTH + x] = kmake_char(' ',0);
         }
     }
 
@@ -50,10 +51,11 @@ void kinit(){
     
     VIDEO_MEM = (uint16_t*)(VIDEO_MEM_BASE);
 
-    kclear_display();
-    idt_init();
+    kclear_display(); // clear the screen
+    idt_init(); // initialise interrupt descriptor table
 
 
+    kprintf("yeah, its working");
 
 
 

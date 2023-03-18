@@ -8,13 +8,15 @@ _start:
 	jmp short start
 	nop
 
+; Space left for BIOS Parameter Block
+
 times 33 db 0
 
 start:
-	jmp 0:step2
+	jmp 0:seg_init
 
-
-step2:
+; Initialise memory segments in Real Mode
+seg_init:
 	cli	
 	mov ax,0x00
 	mov ds,ax
@@ -63,6 +65,9 @@ gdt_descriptor:
 	dw gdt_end - gdt_start - 1 
 	dd gdt_start
 
+
+;Protected mode begins here
+; Kernel code begins at 0x100000
  [BITS 32]
  load32:
     mov eax, 1
@@ -130,5 +135,7 @@ ata_lba_read:
     ; End of reading sectors into memory
     ret
 
+; fill first sector with nulls
 times 510-($ - $$) db 0
+; Boot signature 0x55AA written in little-endian format
 dw 0xAA55

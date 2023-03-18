@@ -5,6 +5,7 @@ global insw
 global outb
 global outw
 
+; read a byte from provided port
 insb:
     push ebp
     mov ebp, esp
@@ -17,6 +18,7 @@ insb:
     pop ebp
     ret
 
+; read a word from provided port
 insw: 
 
     push ebp
@@ -30,6 +32,8 @@ insw:
     pop ebp
     ret
 
+
+; send a byte to provided port
 outb:
     push ebp
     mov ebp, esp
@@ -44,6 +48,7 @@ outb:
     pop ebp
     ret
 
+; send a word to provided port
 outw:
 
     push ebp
