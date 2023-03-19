@@ -1,6 +1,8 @@
 #include "kernel.h"
 #include "idt/idt.h"
 #include "../io/io.h"
+#include "../mm/heap/kheap.h"
+
 
 
 #define VIDEO_MEM_BASE 0xB8000
@@ -19,6 +21,13 @@ uint32_t kprintf(const char * str){
     uint32_t strlen = 0;
 
     while(str[strlen]){
+
+        if(str[strlen] == '\n'){
+            cursor_x = 0;
+            cursor_y++;
+            strlen++;
+            continue;
+        }
 
         VIDEO_MEM[cursor_y * VGA_WIDTH + cursor_x] = kmake_char(str[strlen], 0xf);
         strlen++;
@@ -52,7 +61,6 @@ void kclear_display(){
 
 }
 
-
 void kinit(){
     
     // initialise video memory
@@ -62,7 +70,21 @@ void kinit(){
     idt_init(); // initialise interrupt descriptor table
     __enable_irq(); // enable interrupts
 
-    kprintf("yeah, too cool right?");
+
+    kheap_init(); // initialise kernel heap section
+
+
+    // int *x  = (int*) kmalloc(10*sizeof(int));
+    // int *y  = (int*) kmalloc(200*sizeof(int));
+
+    // kfree(x);
+
+    // int *z = (int*) kmalloc(100*sizeof(int));
+
+    // if(x || y || z){}
+
+
+        kprintf("omg what was that bug!?");
 
 
 

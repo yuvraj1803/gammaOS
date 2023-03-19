@@ -28,8 +28,8 @@ struct heap{
 };
 
 
-int32_t create_heap(struct heap* _heap, void* saddr, void* eaddr, struct hb_table* _);
-void* malloc(struct heap* heap, size_t _size);
+int32_t create_heap(struct heap* _heap, void* saddr, void* eaddr, struct hb_table* _hb_table);
+void* malloc(struct heap* heap, size_t _size_in_bytes);
 void free(struct heap* heap, void* _base);
 
 #endif

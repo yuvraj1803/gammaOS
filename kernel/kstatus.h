@@ -3,7 +3,8 @@
 
 enum ERRORS{
 
-    
+    ERR_INVARG,
+    ERR_MALLOC_FAIL
 
 };
 
