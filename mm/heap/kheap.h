@@ -6,6 +6,7 @@
 void kheap_init();
 
 void* kmalloc(uint32_t _size_in_bytes);
+void* kzalloc(uint32_t _size_in_bytes);
 void kfree(void* _base);
 
 #endif

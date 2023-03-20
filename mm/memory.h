@@ -3,6 +3,6 @@
 
 #include <stddef.h>
 
-void * memset(void * ptr, int c, size_t size);
+void * memset(void * base_addr, int init_val, size_t size);
 
 #endif

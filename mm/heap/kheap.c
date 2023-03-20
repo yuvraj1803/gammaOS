@@ -2,7 +2,7 @@
 #include "heap.h"
 #include "../../config.h"
 #include "../../kernel/kernel.h"
-
+#include "../memory.h"
 #include <stdint.h>
 
 struct heap     kheap;       // kernel heap
@@ -27,9 +27,19 @@ void kheap_init(){
 
 }
 
+
 void* kmalloc(uint32_t _size_in_bytes){
     return malloc(&kheap, _size_in_bytes);
 }
+
+void* kzalloc(uint32_t _size_in_bytes){
+
+    void* _addr = malloc(&kheap, _size_in_bytes);
+    memset(_addr, 0, _size_in_bytes);
+
+    return _addr;
+}
+
 
 void kfree(void* _base){
     free(&kheap, _base);
