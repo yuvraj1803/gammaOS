@@ -3,6 +3,10 @@
 
 #include <stdint.h>
 
+typedef uint32_t disk_type;
+
+
+
 struct disk{
 
     

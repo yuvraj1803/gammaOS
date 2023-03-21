@@ -4,70 +4,17 @@
 #include "../mm/heap/kheap.h"
 #include "../mm/paging/paging.h"
 #include "../drivers/disk/disk.h"
+#include "../drivers/display/vga/vga.h"
+#include "../config.h"
 
-
-#define VIDEO_MEM_BASE 0xB8000
-#define VGA_WIDTH      80
-#define VGA_HEIGHT     80
-
-uint16_t * VIDEO_MEM;
-uint8_t cursor_x, cursor_y;
-
-// given a character and its color, returns its hex(char:color) in little endian.
-uint16_t kmake_char(char c, char color){
-    return (color << 8) | c;
-}
-
-uint32_t kprintf(const char * str){
-    uint32_t strlen = 0;
-
-    while(str[strlen]){
-
-        if(str[strlen] == '\n'){
-            cursor_x = 0;
-            cursor_y++;
-            strlen++;
-            continue;
-        }
-
-        VIDEO_MEM[cursor_y * VGA_WIDTH + cursor_x] = kmake_char(str[strlen], 0xf);
-        strlen++;
-        cursor_x++;
-
-
-        if(cursor_x == VGA_WIDTH){
-            cursor_x = 0;
-            cursor_y++;
-        }
-    }
-
-    return strlen;
-
-}
-
-void kpanic(const char* str){
-    kprintf(str);
-    while(1); // halt the kernel at this point.
-}
-
-
-void kclear_display(){
-    cursor_x = 0;
-    cursor_y = 0;
-    for(int x=0;x<VGA_WIDTH;x++){
-        for(int y=0;y<VGA_HEIGHT;y++){
-            VIDEO_MEM[y*VGA_WIDTH + x] = kmake_char(' ',0);
-        }
-    }
-
-}
 
 struct vaddr_space* kernel_space;
 
 void kinit(){
     
-    // initialise video memory
-    VIDEO_MEM = (uint16_t*)(VIDEO_MEM_BASE);
+#if defined(VGA)
+    vga_init();
+#endif
 
     kclear_display(); // clear the screen
     idt_init(); // initialise interrupt descriptor table
@@ -82,9 +29,6 @@ void kinit(){
     enable_paging(); // enable paging
 
     __enable_irq(); // enable interrupts
-
-    char buffer[512];
-    ata_lba_read_sector(0,1,buffer);
 
     kprintf("woo");
 
