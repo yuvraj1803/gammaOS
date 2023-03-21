@@ -12,6 +12,6 @@ struct disk{
 
 
 
-void ata_lba_read_sector(int lba, int sector_count, void* read_buffer);
+void ata_lba_read_sector(uint32_t lba, uint32_t sector_count, void* read_buffer);
 
 #endif

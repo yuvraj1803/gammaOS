@@ -6,7 +6,7 @@
 #define SECTOR_BUFFER_REQUIRES_SERVICING    0b00001000
 #define SECTOR_SIZE_IN_BYTES                512
 
-void ata_lba_read_sector(int lba, int sector_count, void* read_buffer){
+void ata_lba_read_sector(uint32_t lba, uint32_t sector_count, void* read_buffer){
 
     outb(0x1F6, (lba >> 24) | 0xE0);
     outb(0x1F2, sector_count);

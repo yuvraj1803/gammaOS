@@ -83,5 +83,10 @@ void kinit(){
 
     __enable_irq(); // enable interrupts
 
+    char buffer[512];
+    ata_lba_read_sector(0,1,buffer);
+
+    kprintf("woo");
+
 
 }
