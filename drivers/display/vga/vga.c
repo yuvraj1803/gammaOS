@@ -47,6 +47,36 @@ uint32_t kprintf(const char * str){
 
 }
 
+// kprintf with color
+uint32_t kprintf_wc(const char * str, uint8_t color){
+    uint32_t strlen = 0;
+
+    while(str[strlen]){
+
+        if(str[strlen] == '\n'){
+            cursor_x = 0;
+            cursor_y++;
+            strlen++;
+            continue;
+        }
+
+        VGA_BASE[cursor_y * VGA_WIDTH + cursor_x] = kmake_char(str[strlen], color);
+        strlen++;
+        cursor_x++;
+
+
+        if(cursor_x == VGA_WIDTH){
+            cursor_x = 0;
+            cursor_y++;
+        }
+    }
+
+    return strlen;
+
+}
+
+
+
 void kpanic(const char* str){
     kprintf(str);
     while(1); // halt the kernel at this point.

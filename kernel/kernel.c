@@ -30,7 +30,7 @@ void kinit(){
 
     __enable_irq(); // enable interrupts
 
-    kprintf("woo");
+    kprintf_wc("woo", 12);
 
 
 }
