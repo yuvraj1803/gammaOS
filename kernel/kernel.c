@@ -62,8 +62,6 @@ void kclear_display(){
 
 }
 
-struct vaddr_space* kernel_space = 0;
-
 void kinit(){
     
     // initialise video memory
@@ -75,27 +73,11 @@ void kinit(){
     kheap_init(); // initialise kernel heap section
 
     /* creating kernel address space and loading its page directory into cr3*/
-    
     struct vaddr_space* kernel_space = create_virtual_address_space(PAGE_PRESENT | PAGE_USER_ACCESS | PAGE_WRITE_ACCESS);
     load_page_directory(kernel_space->pd);
 
-    char* p1 =  kzalloc(10);
-    p1 = "yuv";
-
-    map_vaddr_to_val(kernel_space->pd, (void*) 0x1000, (uint32_t) p1 | PAGE_PRESENT | PAGE_USER_ACCESS | PAGE_WRITE_ACCESS);
-
 
     enable_paging(); // enable paging
-
-    char* p2 = (char*) 0x1000;
-    p2[0] = 's';
-    p2[1] = 'a';
-    p2[2] = 'k';
-
-
-    kprintf(p1);
-    kprintf("\n");
-    kprintf(p2);
 
     __enable_irq(); // enable interrupts
 

@@ -48,4 +48,6 @@ void idt_init(){
 
     // tell processor where idt is. check idt.s
     idt_load(&idtr_descriptor);
+
+
 }

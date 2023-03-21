@@ -32,6 +32,21 @@ insw:
     pop ebp
     ret
 
+; read a double-word(32-bit) from provided port
+
+insdw:
+
+    push ebp
+    mov ebp, esp
+
+    xor eax, eax
+
+    mov edx, [ebp + 8]
+    in eax, dx
+
+    pop ebp
+    ret
+
 
 ; send a byte to provided port
 outb:
@@ -63,3 +78,20 @@ outw:
 
     pop ebp
     ret
+
+; send a double-word (32-bit) to provided port
+outdw:
+    
+    push ebp
+    mov ebp, esp
+
+    xor eax, eax
+
+    mov eax, [ebp + 12]
+    mov edx, [ebp + 8]
+
+    out dx, eax
+
+    pop ebp
+    ret
+

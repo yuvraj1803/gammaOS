@@ -33,6 +33,7 @@ enable_a20:
 	or al, 2
 	out 0x92, al
 
+
 	ret
 
 ; initialises programmable interrupt controller

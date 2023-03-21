@@ -1,11 +1,15 @@
 #ifndef __IO_H__
 #define __IO_H__
 
-unsigned char insb(unsigned short port);
-unsigned short insw(unsigned short port);
+#include <stdint.h>
 
-void outb(unsigned short port, unsigned char val);
-void outw(unsigned short port, unsigned short val);
+uint8_t insb(uint16_t port);
+uint16_t insw(uint16_t port);
+uint32_t insdw(uint16_t port);
+
+void outb(uint16_t port, uint8_t val);
+void outw(uint16_t port, uint16_t val);
+void outdw(uint16_t port, uint32_t val);
 
 
 #endif
