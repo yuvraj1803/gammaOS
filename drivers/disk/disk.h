@@ -9,8 +9,9 @@ typedef uint32_t disk_type;
 
 struct disk{
 
-    
-
+    uint16_t    disk_index;
+    uint16_t    sector_size;
+    disk_type   type;
 
 };
 
