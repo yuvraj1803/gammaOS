@@ -2,8 +2,10 @@ section .asm
 
 global insb
 global insw
+global insdw
 global outb
 global outw
+global outdw
 
 ; read a byte from provided port
 insb:

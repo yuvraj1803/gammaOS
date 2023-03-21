@@ -3,7 +3,7 @@
 #include "../io/io.h"
 #include "../mm/heap/kheap.h"
 #include "../mm/paging/paging.h"
-
+#include "../drivers/disk/disk.h"
 
 
 #define VIDEO_MEM_BASE 0xB8000
@@ -62,6 +62,8 @@ void kclear_display(){
 
 }
 
+struct vaddr_space* kernel_space;
+
 void kinit(){
     
     // initialise video memory
@@ -73,14 +75,13 @@ void kinit(){
     kheap_init(); // initialise kernel heap section
 
     /* creating kernel address space and loading its page directory into cr3*/
-    struct vaddr_space* kernel_space = create_virtual_address_space(PAGE_PRESENT | PAGE_USER_ACCESS | PAGE_WRITE_ACCESS);
+    kernel_space = create_virtual_address_space(PAGE_PRESENT | PAGE_USER_ACCESS | PAGE_WRITE_ACCESS);
     load_page_directory(kernel_space->pd);
 
 
     enable_paging(); // enable paging
 
     __enable_irq(); // enable interrupts
-
 
 
 }

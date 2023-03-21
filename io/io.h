@@ -3,7 +3,7 @@
 
 #include <stdint.h>
 
-uint8_t insb(uint16_t port);
+uint8_t  insb(uint16_t port);
 uint16_t insw(uint16_t port);
 uint32_t insdw(uint16_t port);
 

@@ -1,4 +1,4 @@
-FILES = ./build/kernel.s.o ./build/kernel.o ./build/idt/idt.s.o ./build/idt/idt.o ./build/mm/memory.o ./build/io/io.s.o ./build/mm/heap/heap.o ./build/mm/heap/kheap.o ./build/mm/paging/paging.s.o ./build/mm/paging/paging.o
+FILES = ./build/kernel.s.o ./build/kernel.o ./build/idt/idt.s.o ./build/idt/idt.o ./build/mm/memory.o ./build/io/io.s.o ./build/mm/heap/heap.o ./build/mm/heap/kheap.o ./build/mm/paging/paging.s.o ./build/mm/paging/paging.o ./build/drivers/disk/disk.o
 INCLUDES = -I./kernel
 FLAGS = -g -ffreestanding -falign-jumps -falign-functions -falign-labels -falign-loops -fstrength-reduce -fomit-frame-pointer -finline-functions -Wno-unused-function -fno-builtin -Werror -Wno-unused-label -Wno-cpp -Wno-unused-parameter -nostdlib -nostartfiles -nodefaultlibs -Wall -O0 -Iinc
 
@@ -45,6 +45,9 @@ all: ./bin/boot.bin ./bin/kernel.bin
 
 ./build/mm/paging/paging.s.o: ./mm/paging/paging.s
 	nasm -f elf -g ./mm/paging/paging.s -o ./build/mm/paging/paging.s.o
+
+./build/drivers/disk/disk.o: ./drivers/disk/disk.c
+	i686-elf-gcc $(INCLUDES) -I./drivers/disk $(FLAGS) -std=gnu99 -c ./drivers/disk/disk.c -o ./build/drivers/disk/disk.o 
 
 
 clean:
