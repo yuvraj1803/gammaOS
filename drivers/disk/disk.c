@@ -1,12 +1,67 @@
 #include "disk.h"
 #include "../../io/io.h"
 #include "../../kernel/kernel.h"
+#include "../../mm/heap/kheap.h"
 
 #define READ_SECTORS_WITH_RETRY             0x20
 #define SECTOR_BUFFER_REQUIRES_SERVICING    0b00001000
 #define SECTOR_SIZE_IN_BYTES                512
 
+
+// returns a disk streamer pointing at given position
+struct disk_stream* disk_stream_init(struct disk_stream* streamer, uint32_t position){
+    streamer->streamer_pos = position;
+
+    return streamer;
+}
+
+// given a disk streamer, points it to given location.
+void disk_stream_seek(struct disk_stream* streamer, uint32_t position){
+    streamer->streamer_pos = position;
+}
+
+void disk_stream_close(struct disk_stream* streamer){
+    kfree(streamer);
+}
+
+void disk_stream_read(struct disk_stream* streamer, void* read_buffer, uint32_t bytes_to_read){
+
+
+    // finding which sector the streamer is currently at
+    uint32_t sector        = streamer->streamer_pos / SECTOR_SIZE_IN_BYTES;
+    uint32_t sector_offset = streamer->streamer_pos % SECTOR_SIZE_IN_BYTES;
+
+    // if we are trying to read out of bounds of current sector
+    uint8_t is_overflowing = (sector_offset + bytes_to_read) >= SECTOR_SIZE_IN_BYTES;
+
+    uint8_t temp_buffer[SECTOR_SIZE_IN_BYTES];
+    uint32_t temp_bytes_to_read = bytes_to_read;
+
+
+    // we can only read one sector at a time, so we first read the current sector in which the streamer is at.
+    if(is_overflowing){
+        bytes_to_read -= (sector_offset + bytes_to_read) - SECTOR_SIZE_IN_BYTES;
+    }
+
+    // reading the current sector and adding it to the read buffer provided
+    ata_lba_read_sector(sector, 1, temp_buffer);
+
+    for(int index = 0;index < bytes_to_read; index++){
+        *(uint8_t*) read_buffer++ = temp_buffer[sector_offset + index];
+    }
+
+    streamer->streamer_pos += bytes_to_read;
+
+    // now if we tried to read out of bounds, we recursively read the next sector.
+    if(is_overflowing){
+        disk_stream_read(streamer, read_buffer, temp_bytes_to_read - bytes_to_read);
+    }
+
+
+}
+
 void ata_lba_read_sector(uint32_t lba, uint32_t sector_count, void* read_buffer){
+
 
     outb(0x1F6, (lba >> 24) | 0xE0);
     outb(0x1F2, sector_count);

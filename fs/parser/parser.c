@@ -5,6 +5,7 @@
 #include "../../string/string.h"
 #include "../../mm/memory.h"
 #include "../../config.h"
+#include "../../kernel/kernel.h"
 
 
 char parse_drive(char* __path){

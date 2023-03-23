@@ -32,6 +32,14 @@ void kinit(){
 
     __enable_irq(); // enable interrupts
 
+    char buf[512];
+
+    struct disk_stream* streamer = (struct disk_stream*) kzalloc(sizeof(struct  disk_stream));
+    
+    disk_stream_init(streamer, 0);
+    disk_stream_read(streamer, buf, 200);
+
+
     kprintf_wc("woo", 12);
 
 
