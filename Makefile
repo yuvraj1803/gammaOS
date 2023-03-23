@@ -1,6 +1,6 @@
-FILES = ./build/kernel.s.o ./build/kernel.o ./build/idt/idt.s.o ./build/idt/idt.o ./build/mm/memory.o ./build/io/io.s.o ./build/mm/heap/heap.o ./build/mm/heap/kheap.o ./build/mm/paging/paging.s.o ./build/mm/paging/paging.o ./build/drivers/disk/disk.o ./build/drivers/display/vga/vga.o
+FILES = ./build/kernel.s.o ./build/kernel.o ./build/idt/idt.s.o ./build/idt/idt.o ./build/mm/memory.o ./build/io/io.s.o ./build/mm/heap/heap.o ./build/mm/heap/kheap.o ./build/mm/paging/paging.s.o ./build/mm/paging/paging.o ./build/drivers/disk/disk.o ./build/drivers/display/vga/vga.o ./build/fs/parser/parser.o ./build/string/string.o ./build/debug/debug.o
 INCLUDES = -I./kernel
-FLAGS = -g -ffreestanding -falign-jumps -falign-functions -falign-labels -falign-loops -fstrength-reduce -fomit-frame-pointer -finline-functions -Wno-unused-function -fno-builtin -Werror -Wno-unused-label -Wno-cpp -Wno-unused-parameter -nostdlib -nostartfiles -nodefaultlibs -Wall -O0 -Iinc
+FLAGS = -g -ffreestanding -falign-jumps -falign-functions -falign-labels -falign-loops -fstrength-reduce -fomit-frame-pointer -finline-functions -Wno-unused-function -fno-builtin -Werror -Wno-unused-label -Wno-cpp -Wno-unused-parameter -Wno-unused-variable -Wno-unused-value  -nostdlib -nostartfiles -nodefaultlibs -Wall -O0 -Iinc
 
 
 all: ./bin/boot.bin ./bin/kernel.bin
@@ -52,6 +52,18 @@ all: ./bin/boot.bin ./bin/kernel.bin
 
 ./build/drivers/display/vga/vga.o: ./drivers/display/vga/vga.c
 	i686-elf-gcc $(INCLUDES) -I./drivers/display/vga $(FLAGS) -std=gnu99 -c ./drivers/display/vga/vga.c -o ./build/drivers/display/vga/vga.o 
+
+./build/fs/parser/parser.o: ./fs/parser/parser.c
+	i686-elf-gcc $(INCLUDES) -I./fs/parser $(FLAGS) -std=gnu99 -c ./fs/parser/parser.c -o ./build/fs/parser/parser.o
+
+./build/fs/parser/parser.o: ./fs/parser/parser.c
+	i686-elf-gcc $(INCLUDES) -I./fs/parser $(FLAGS) -std=gnu99 -c ./fs/parser/parser.c -o ./build/fs/parser/parser.o
+
+./build/string/string.o: ./string/string.c
+	i686-elf-gcc $(INCLUDES) -I./string $(FLAGS) -std=gnu99 -c ./string/string.c -o ./build/string/string.o
+
+./build/debug/debug.o: ./debug/debug.c
+	i686-elf-gcc $(INCLUDES) -I./debug $(FLAGS) -std=gnu99 -c ./debug/debug.c -o ./build/debug/debug.o
 
 
 clean:

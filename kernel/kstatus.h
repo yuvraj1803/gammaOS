@@ -5,7 +5,8 @@ enum ERRORS{
 
     SUCCESS = 0,
     ERR_INVARG,
-    ERR_MALLOC_FAIL
+    ERR_MALLOC_FAIL,
+    ERR_INVPATH,
 
 };
 

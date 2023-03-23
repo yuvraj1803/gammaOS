@@ -10,3 +10,19 @@ void * memset(void * base_addr, int init_val, size_t size){
 
     return base_addr;
 }
+
+
+// copies _size bytes of memory from src to tgt.
+void* memcpy(void* tgt, const void* src, size_t _size){
+    uint8_t* tgt_ptr = (uint8_t *) tgt;
+    uint8_t* src_ptr = (uint8_t *) src;
+
+    while(_size--){
+        *tgt_ptr = *src_ptr;
+        tgt_ptr++;
+        src_ptr++;
+    }
+
+    return tgt;
+
+}

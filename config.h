@@ -11,5 +11,9 @@
 #define KERNEL_HEAP_BASE        0x01000000
 #define KERNEL_HEAP_TABLE_BASE  0x00007E00
 
+#define FS_MAX_PATH_LENGTH           512
+#define FS_MAX_PATH_UNIT_LENGTH      64
+
+
 #define VGA                     
 #endif

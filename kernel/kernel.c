@@ -6,6 +6,8 @@
 #include "../drivers/disk/disk.h"
 #include "../drivers/display/vga/vga.h"
 #include "../config.h"
+#include "../fs/parser/parser.h"
+#include "../fs/path.h"
 
 
 struct vaddr_space* kernel_space;
