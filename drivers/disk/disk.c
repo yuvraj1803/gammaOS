@@ -7,20 +7,20 @@
 #define SECTOR_BUFFER_REQUIRES_SERVICING    0b00001000
 #define SECTOR_SIZE_IN_BYTES                512
 
-
+struct disk* disks;
 
 // initialise memory for MAX_NUMBER_OF_DISKS and add primary disk.
 struct disk* disk_init(){
 
-    disks = (struct disk*) kzalloc(sizeof(disk) * MAX_NUMBER_OF_DISKS);
+    disks = (struct disk*) kzalloc(sizeof(struct disk) * MAX_NUMBER_OF_DISKS);
 
-    disks[PRIMARY_DISK-'A']->disk_id = PRIMARY_DISK;
+    disks[PRIMARY_DISK-'A'].disk_id = PRIMARY_DISK;
 
-    return disks[PRIMARY_DISK-'A'];
+    return &disks[PRIMARY_DISK-'A'];
 }
 
 struct disk* disk_get(char disk_id){
-    return disks[disk_id-'A'];
+    return &disks[disk_id-'A'];
 }
 
 // returns a disk streamer pointing at given position

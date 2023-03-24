@@ -14,8 +14,6 @@ struct disk{
     char     disk_id;
 };
 
-struct disk* disks;
-
 struct disk* disk_init();
 struct disk* disk_get(char disk_id);
 
