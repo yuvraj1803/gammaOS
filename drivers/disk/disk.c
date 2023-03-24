@@ -8,6 +8,21 @@
 #define SECTOR_SIZE_IN_BYTES                512
 
 
+
+// initialise memory for MAX_NUMBER_OF_DISKS and add primary disk.
+struct disk* disk_init(){
+
+    disks = (struct disk*) kzalloc(sizeof(disk) * MAX_NUMBER_OF_DISKS);
+
+    disks[PRIMARY_DISK-'A']->disk_id = PRIMARY_DISK;
+
+    return disks[PRIMARY_DISK-'A'];
+}
+
+struct disk* disk_get(char disk_id){
+    return disks[disk_id-'A'];
+}
+
 // returns a disk streamer pointing at given position
 struct disk_stream* disk_stream_init(struct disk_stream* streamer, uint32_t position){
     streamer->streamer_pos = position;

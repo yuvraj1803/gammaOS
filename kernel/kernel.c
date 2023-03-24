@@ -27,6 +27,7 @@ void kinit(){
     kernel_space = create_virtual_address_space(PAGE_PRESENT | PAGE_USER_ACCESS | PAGE_WRITE_ACCESS);
     load_page_directory(kernel_space->pd);
 
+    disk_init();
 
     enable_paging(); // enable paging
 

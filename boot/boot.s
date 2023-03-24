@@ -4,11 +4,32 @@ BITS 16
 CODE_SGM equ gdt_code - gdt_start
 DATA_SGM equ gdt_data - gdt_start
 
-_start:
-	jmp short start
-	nop
+; Boot Parameter Block
+jmp short start
+nop
 
-; Space left for BIOS Parameter Block
+OEMIdentifier           db 'gammaOS '
+BytesPerSector          dw  0x200
+SectorsPerCluster       db  0x80
+ReservedSectors         dw  200
+NumberOfFATs            db  0x02
+RootEntries             dw  0x40
+SectorsInVolume         dw  0x00
+MediaDESCType           db  0xF8
+SectorsPerFAT           dw  0x100
+SectorsPerTrack         dw  0x20
+HeadsInMedia            dw  0x40
+HiddenSectors           dd  0x00
+LargeSectors            dd  0x773594
+
+; Extended Boot Parameter Block
+DriveNumber             db  0x80
+WinNTFlags              db  0x00
+Signature               db  0x29
+VolumeID                dd  0xD105
+VolumeLabel             db 'gamma BOOT '
+SystemID                db 'FAT16   '
+
 
 times 33 db 0
 
