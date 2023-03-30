@@ -8,15 +8,31 @@
 #include "../config.h"
 #include "../fs/parser/parser.h"
 #include "../fs/path.h"
-
+#include "gdt/gdt.h"
+#include "../mm/memory.h"
 
 struct vaddr_space* kernel_space;
 
-void kinit(){
+struct gdt _gdt[GDT_ENTRIES];
+struct gdt_structured _gdt_s[GDT_ENTRIES] = {
+    {.base = 0, .limit=0x00, .attrubutes=0x00},
+    {.base = 0, .limit=0x000FFFFF, .attrubutes=0x9a}, // kernel code
+    {.base = 0, .limit=0x000FFFFF, .attrubutes=0x92} // kernel data
     
+};
+
+void kinit(){
 #if defined(VGA)
     vga_init();
 #endif
+
+    // form gdt
+    memset(_gdt, 0, sizeof(struct  gdt));
+    get_gdt_from_structured(_gdt, _gdt_s, GDT_ENTRIES);
+
+    // load gdt
+    load_gdt(_gdt, sizeof(_gdt));
+
 
     kclear_display(); // clear the screen
     idt_init(); // initialise interrupt descriptor table
