@@ -10,14 +10,18 @@
 #include "../fs/path.h"
 #include "gdt/gdt.h"
 #include "../mm/memory.h"
+#include "task/tss.h"
 
 struct vaddr_space* kernel_space;
-
+struct tss _tss;
 struct gdt _gdt[GDT_ENTRIES];
 struct gdt_structured _gdt_s[GDT_ENTRIES] = {
     {.base = 0, .limit=0x00, .attrubutes=0x00},
     {.base = 0, .limit=0x000FFFFF, .attrubutes=0x9a}, // kernel code
-    {.base = 0, .limit=0x000FFFFF, .attrubutes=0x92} // kernel data
+    {.base = 0, .limit=0x000FFFFF, .attrubutes=0x92}, // kernel data
+    {.base = 0, .limit=0x000FFFFF, .attrubutes=0xf8}, // user code
+    {.base = 0, .limit=0x000FFFFF, .attrubutes=0xf2}, // user data
+    {.base = (uint32_t)&_tss, .limit=sizeof(struct tss), .attrubutes=0xe9} // tss
     
 };
 
@@ -32,6 +36,14 @@ void kinit(){
 
     // load gdt
     load_gdt(_gdt, sizeof(_gdt));
+
+    // form tss
+    memset(&_tss, 0, sizeof(struct tss));
+    _tss.esp0 = 0x600000;  
+    _tss.ss0  = KERNEL_DATA_SELECTOR;
+
+    // load tss
+    tss_load(0x28); // 0x28 is the offset of tss in gdt
 
 
     kclear_display(); // clear the screen
@@ -49,15 +61,5 @@ void kinit(){
 
     __enable_irq(); // enable interrupts
 
-    char buf[512];
-
-    struct disk_stream* streamer = (struct disk_stream*) kzalloc(sizeof(struct  disk_stream));
-    
-    disk_stream_init(streamer, 0);
-    disk_stream_read(streamer, buf, 200);
-
-
-    kprintf_wc("woo", 12);
-
-
+    kprintf_wc("hello, yuvraj here!", 14);
 }
