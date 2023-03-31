@@ -10,7 +10,7 @@
 #include "../fs/path.h"
 #include "gdt/gdt.h"
 #include "../mm/memory.h"
-#include "task/tss.h"
+#include "task/tss/tss.h"
 
 struct vaddr_space* kernel_space;
 struct tss _tss;
@@ -38,7 +38,7 @@ void kinit(){
     load_gdt(_gdt, sizeof(_gdt));
 
     // form tss
-    memset(&_tss, 0, sizeof(struct tss));
+    memset(&_tss, 0, sizeof(_tss));
     _tss.esp0 = 0x600000;  
     _tss.ss0  = KERNEL_DATA_SELECTOR;
 
@@ -53,6 +53,9 @@ void kinit(){
 
     /* creating kernel address space and loading its page directory into cr3*/
     kernel_space = create_virtual_address_space(PAGE_PRESENT | PAGE_USER_ACCESS | PAGE_WRITE_ACCESS);
+    if(kernel_space == 0x0){
+        kpanic("[KERNEL ERROR]: Couldn't create kernel address space...");
+    }
     load_page_directory(kernel_space->pd);
 
     disk_init();

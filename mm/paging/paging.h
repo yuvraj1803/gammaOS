@@ -29,6 +29,7 @@ void enable_paging();
 
 void load_page_directory(struct page_directory* pd);
 struct vaddr_space* create_virtual_address_space(uint8_t vaddr_space_flags);
+void destroy_virtual_address_space(struct vaddr_space* _space);
 
 int8_t map_vaddr_to_val(struct page_directory* pd, void* vaddr, uint32_t val);
 

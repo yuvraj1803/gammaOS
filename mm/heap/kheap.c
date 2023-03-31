@@ -29,12 +29,17 @@ void kheap_init(){
 
 
 void* kmalloc(uint32_t _size_in_bytes){
-    return malloc(&kheap, _size_in_bytes);
+    void* _addr = malloc(&kheap, _size_in_bytes);
+    if(_addr == 0x0) return 0x0; // failed to allocate
+
+    return _addr;
 }
 
 void* kzalloc(uint32_t _size_in_bytes){
 
     void* _addr = malloc(&kheap, _size_in_bytes);
+    if(_addr == 0x0) return 0x0; // failed to allocate
+
     memset(_addr, 0, _size_in_bytes);
 
     return _addr;

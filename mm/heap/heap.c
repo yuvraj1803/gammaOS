@@ -42,7 +42,9 @@ void* malloc(struct heap* _heap, size_t _size_in_bytes){
     size_t aligned_size = get_aligned_heap_size(_size_in_bytes);
     uint32_t blocks_to_allocate = aligned_size / KERNEL_HB_SIZE;
 
-    return malloc_blocks(_heap, blocks_to_allocate);
+    void* malloced_base_address = malloc_blocks(_heap, blocks_to_allocate);
+
+    return (malloced_base_address == 0x0 ? 0x0 : malloced_base_address);
 }
 
 
@@ -59,7 +61,7 @@ void* malloc_blocks(struct heap* _heap, uint32_t blocks_to_allocate){
     // we need to find a set of blocks which are free in the heap entry table
     uint32_t start_entry = find_free_entry(_heap, blocks_to_allocate);
     if(start_entry == -ERR_MALLOC_FAIL){
-        kpanic("[KERNEL ERROR]: Couldn't find free heap block entry.\n");
+        return 0x0;
     }
 
     // once we have allocated those blocks, we mark them taken.
