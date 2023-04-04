@@ -11,6 +11,8 @@
 #include "gdt/gdt.h"
 #include "../mm/memory.h"
 #include "task/tss/tss.h"
+#include "../fs/vfs/vfs.h"
+#include "../fs/fat16/fat16.h"
 
 struct vaddr_space* kernel_space;
 struct tss _tss;
@@ -54,11 +56,16 @@ void kinit(){
     /* creating kernel address space and loading its page directory into cr3*/
     kernel_space = create_virtual_address_space(PAGE_PRESENT | PAGE_USER_ACCESS | PAGE_WRITE_ACCESS);
     if(kernel_space == 0x0){
-        kpanic("[KERNEL ERROR]: Couldn't create kernel address space...");
+        kpanic("[KERNEL ERROR]: Couldn't create kernel address space...\n");
     }
     load_page_directory(kernel_space->pd);
 
-    disk_init();
+    if(!disk_init('A')){
+        kpanic("[KERNEL ERROR]: Couldn't initialise primary disk...\n");
+    }
+
+    vfs_init(); // initialise the virtual file system layer
+    vfs_attach(fat16_init()); // attach fat16 filesystem to the virtual filesystem layer
 
     enable_paging(); // enable paging
 

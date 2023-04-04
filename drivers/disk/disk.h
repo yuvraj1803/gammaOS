@@ -3,6 +3,7 @@
 
 #include <stdint.h>
 #include "../../config.h"
+#include "../../fs/vfs/vfs.h"
 
 #define PRIMARY_DISK        'A'
 
@@ -12,9 +13,10 @@ struct disk_stream{
 
 struct disk{
     char     disk_id;
+    struct filesystem* fs;
 };
 
-struct disk* disk_init();
+struct disk* disk_init(char disk_id);
 struct disk* disk_get(char disk_id);
 
 struct disk_stream* disk_stream_init(struct disk_stream* streamer, uint32_t position);

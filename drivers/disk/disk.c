@@ -2,6 +2,7 @@
 #include "../../io/io.h"
 #include "../../kernel/kernel.h"
 #include "../../mm/heap/kheap.h"
+#include "../../fs/vfs/vfs.h"
 
 #define READ_SECTORS_WITH_RETRY             0x20
 #define SECTOR_BUFFER_REQUIRES_SERVICING    0b00001000
@@ -9,14 +10,19 @@
 
 struct disk* disks;
 
-// initialise memory for MAX_NUMBER_OF_DISKS and add primary disk.
-struct disk* disk_init(){
+// initialise memory for MAX_NUMBER_OF_DISKS and add primary disk. Default disk is A
+struct disk* disk_init(char disk_id){
+
+    if(disk_id < 'A' || disk_id >= 'A' + MAX_NUMBER_OF_DISKS){
+        return 0; // illegal disk begin initialised.
+    }
 
     disks = (struct disk*) kzalloc(sizeof(struct disk) * MAX_NUMBER_OF_DISKS);
 
-    disks[PRIMARY_DISK-'A'].disk_id = PRIMARY_DISK;
+    disks[disk_id-'A'].disk_id = disk_id;
+    disks[disk_id-'A'].fs = vfs_resolve(&disks[disk_id-'A']);
 
-    return &disks[PRIMARY_DISK-'A'];
+    return &disks[disk_id-'A'];
 }
 
 struct disk* disk_get(char disk_id){

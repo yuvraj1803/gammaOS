@@ -1,4 +1,4 @@
-FILES = ./build/kernel.s.o ./build/kernel.o ./build/idt/idt.s.o ./build/idt/idt.o ./build/mm/memory.o ./build/io/io.s.o ./build/mm/heap/heap.o ./build/mm/heap/kheap.o ./build/mm/paging/paging.s.o ./build/mm/paging/paging.o ./build/drivers/disk/disk.o ./build/drivers/display/vga/vga.o ./build/fs/parser/parser.o ./build/string/string.o ./build/debug/debug.o ./build/gdt/gdt.o ./build/gdt/gdt.s.o ./build/task/tss/tss.s.o ./build/task/task.o
+FILES = ./build/kernel.s.o ./build/kernel.o ./build/idt/idt.s.o ./build/idt/idt.o ./build/mm/memory.o ./build/io/io.s.o ./build/mm/heap/heap.o ./build/mm/heap/kheap.o ./build/mm/paging/paging.s.o ./build/mm/paging/paging.o ./build/drivers/disk/disk.o ./build/drivers/display/vga/vga.o ./build/fs/parser/parser.o ./build/string/string.o ./build/debug/debug.o ./build/gdt/gdt.o ./build/gdt/gdt.s.o ./build/task/tss/tss.s.o ./build/task/task.o ./build/fs/fat16/fat16.o ./build/fs/vfs/vfs.o
 INCLUDES = -I./kernel
 FLAGS = -g -ffreestanding -falign-jumps -falign-functions -falign-labels -falign-loops -fstrength-reduce -fomit-frame-pointer -finline-functions -Wno-unused-function -fno-builtin -Werror -Wno-unused-label -Wno-cpp -Wno-unused-parameter -Wno-unused-variable -Wno-unused-value  -nostdlib -nostartfiles -nodefaultlibs -Wall -O0 -Iinc
 
@@ -56,8 +56,13 @@ all: ./bin/boot.bin ./bin/kernel.bin
 ./build/fs/parser/parser.o: ./fs/parser/parser.c
 	i686-elf-gcc $(INCLUDES) -I./fs/parser $(FLAGS) -std=gnu99 -c ./fs/parser/parser.c -o ./build/fs/parser/parser.o
 
-./build/fs/parser/parser.o: ./fs/parser/parser.c
-	i686-elf-gcc $(INCLUDES) -I./fs/parser $(FLAGS) -std=gnu99 -c ./fs/parser/parser.c -o ./build/fs/parser/parser.o
+./build/fs/vfs/vfs.o: ./fs/vfs/vfs.c
+	i686-elf-gcc $(INCLUDES) -I./fs/vfs $(FLAGS) -std=gnu99 -c ./fs/vfs/vfs.c -o ./build/fs/vfs/vfs.o
+	
+./build/fs/fat16/fat16.o: ./fs/fat16/fat16.c
+	i686-elf-gcc $(INCLUDES) -I./fs/fat16 $(FLAGS) -std=gnu99 -c ./fs/fat16/fat16.c -o ./build/fs/fat16/fat16.o
+	
+
 
 ./build/string/string.o: ./string/string.c
 	i686-elf-gcc $(INCLUDES) -I./string $(FLAGS) -std=gnu99 -c ./string/string.c -o ./build/string/string.o

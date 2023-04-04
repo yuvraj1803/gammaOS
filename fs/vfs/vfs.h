@@ -16,11 +16,15 @@ enum{
     SEEK_CUR,
     SEEK_END
 };
+struct disk;
+typedef  int8_t (*fs_resolve)(struct disk* _disk);
+typedef  void*  (*fs_open)   (struct disk* _disk, struct path* _path, uint8_t mode);
 
 struct filesystem{
     char name[10];
 
-    int8_t (*resolve)(struct disk* _disk);
+    fs_resolve resolve;
+    fs_open    open;
 
 };
 
@@ -31,6 +35,9 @@ struct file_descriptor{
     struct disk* disk;
 };
 
+void vfs_init();
+int8_t vfs_attach(struct filesystem* fs);
+struct filesystem* vfs_resolve(struct disk* _disk);
 
 
 #endif
