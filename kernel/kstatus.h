@@ -7,7 +7,8 @@ enum ERRORS{
     ERR_INVARG,
     ERR_MALLOC_FAIL,
     ERR_INVPATH,
-    ERR_TASK_FAIL
+    ERR_TASK_FAIL,
+    ERR_FS_FAIL
 
 };
 

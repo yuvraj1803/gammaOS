@@ -17,6 +17,8 @@
 
 #define MAX_NUMBER_OF_DISKS                 26
 
+#define FS_TOTAL_FILESYSTEMS                16
+#define FS_TOTAL_FILE_DESCRIPTORS           1024
 #define FS_MAX_PATH_LENGTH                  512
 #define FS_MAX_PATH_UNIT_LENGTH             64
 
