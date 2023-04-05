@@ -5,9 +5,9 @@
 #include "../parser/parser.h"
 
 enum{
-    READ,
-    WRITE,
-    APPEND,
+    READ    = 'r',
+    WRITE   = 'w',
+    APPEND  = 'a',
     INVALID
 };
 
@@ -38,6 +38,8 @@ struct file_descriptor{
 void vfs_init();
 int8_t vfs_attach(struct filesystem* fs);
 struct filesystem* vfs_resolve(struct disk* _disk);
+int vfs_fopen(const char* filename, uint8_t mode);
+struct file_descriptor* vfs_get_file_descriptor(uint32_t fd);
 
 
 #endif
