@@ -50,11 +50,11 @@ struct filesystem* vfs_resolve(struct disk* _disk){
     for(int index =0;index < FS_TOTAL_FILESYSTEMS; index++){
         if(fs_list[index] != 0 && fs_list[index]->resolve(_disk) == SUCCESS){
             _fs = fs_list[index];
-            break;
+            return _fs;
         }
     }
 
-    return _fs; // disk cannot be resolved by any filesystem.
+    return 0; // disk cannot be resolved by any filesystem.
 
 
 }

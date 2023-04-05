@@ -16,6 +16,8 @@
 #define KERNEL_HEAP_TABLE_BASE              0x00007E00
 
 #define MAX_NUMBER_OF_DISKS                 26
+#define PRIMARY_DISK                        'A'
+
 
 #define FS_TOTAL_FILESYSTEMS                16
 #define FS_TOTAL_FILE_DESCRIPTORS           1024

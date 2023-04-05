@@ -8,7 +8,7 @@
 #define SECTOR_BUFFER_REQUIRES_SERVICING    0b00001000
 #define SECTOR_SIZE_IN_BYTES                512
 
-struct disk* disks;
+struct disk disks[MAX_NUMBER_OF_DISKS];
 
 // initialise memory for MAX_NUMBER_OF_DISKS and add primary disk. Default disk is A
 struct disk* disk_init(char disk_id){
@@ -17,9 +17,9 @@ struct disk* disk_init(char disk_id){
         return 0; // illegal disk begin initialised.
     }
 
-    disks = (struct disk*) kzalloc(sizeof(struct disk) * MAX_NUMBER_OF_DISKS);
-
     disks[disk_id-'A'].disk_id = disk_id;
+    disks[disk_id-'A'].sector_size  = 512;
+
     disks[disk_id-'A'].fs = vfs_resolve(&disks[disk_id-'A']);
 
     return &disks[disk_id-'A'];
@@ -27,6 +27,13 @@ struct disk* disk_init(char disk_id){
 
 struct disk* disk_get(char disk_id){
     return &disks[disk_id-'A'];
+}
+
+struct disk_stream* disk_stream_new(){
+    struct disk_stream* streamer = (struct disk_stream*) kzalloc(sizeof(struct disk_stream));
+    streamer->streamer_pos = 0;
+
+    return streamer;
 }
 
 // returns a disk streamer pointing at given position

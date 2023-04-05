@@ -2,6 +2,9 @@
 #include "../vfs/vfs.h"
 #include "../../string/string.h"
 #include "../../drivers/disk/disk.h"
+#include "../../kernel/kstatus.h"
+#include "../../mm/memory.h"
+#include "../../mm/heap/kheap.h"
 
 #define FAT16_SIGNATURE     0x29
 #define FAT16_ENTRY_SIZE    0x02
@@ -84,8 +87,8 @@ struct fat16_file{
 struct fat16_directory{
     struct fat16_file*  files;
     uint32_t            total_files;
-    uint32_t            first_cluster;
-    uint32_t            last_cluster;
+    uint32_t            first_sector;
+    uint32_t            last_sector;
 };
 
 struct fat16_unit{
@@ -119,8 +122,104 @@ struct filesystem* fat16_init(){
 
 }
 
+// returns number of files in given directory.
+uint32_t fat16_total_files_in_directory(struct disk* _disk, struct fat16_private_data* fat16_private, struct fat16_directory* dir){
+
+    // point streamer to the start of directory.
+    disk_stream_seek(fat16_private->directory_streamer, dir->first_sector * _disk->sector_size);
+
+    uint32_t total_files = 0;
+
+    struct fat16_file temp_file;
+    memset(&temp_file, 0, sizeof(temp_file));
+
+    do{
+        disk_stream_read(fat16_private->directory_streamer, &temp_file, sizeof(temp_file));
+        total_files++;
+    }while(temp_file.name[0] == 0xE5);
+
+
+    return total_files - 1;
+
+}
+
+int8_t fat16_get_root(struct disk* _disk, struct fat16_private_data* fat16_private, struct fat16_directory* root){
+
+    uint32_t fat16_root_sector           = (fat16_private->header.bpb.fat_copies * fat16_private->header.bpb.sectors_per_fat) + fat16_private->header.bpb.reserved_sectors;
+    uint32_t fat16_root_entries          = fat16_private->header.bpb.root_dir_entries;
+    uint32_t fat16_root_size             = fat16_root_entries * sizeof(struct fat16_file);
+    uint32_t fat16_root_sectors_occupied = fat16_root_size / _disk->sector_size + (fat16_root_size % _disk->sector_size != 0);
+
+    // first file of the root directory
+    root->files = (struct fat16_file*) kzalloc(fat16_root_size);
+    struct disk_stream* root_streamer = disk_stream_new();
+
+    if(root->files == 0x0){
+        // couldn't create memory for root directory.
+        return -ERR_MALLOC_FAIL;
+    }
+
+    // read the root directory into our structure.
+    disk_stream_seek(root_streamer, fat16_root_sector * _disk->sector_size);
+    disk_stream_read(root_streamer, root->files, fat16_root_size);
+
+    root->first_sector = fat16_root_sector;
+    root->last_sector  = root->first_sector + fat16_root_sectors_occupied - 1;
+    root->total_files  = fat16_total_files_in_directory(_disk, fat16_private, root); 
+
+    disk_stream_close(root_streamer);
+
+
+    return SUCCESS;
+
+}
+
 int8_t fat16_resolve(struct disk* _disk){
-    return 0;
+
+    struct fat16_private_data* fat16_private = (struct fat16_private_data*) kzalloc(sizeof(struct fat16_private_data));
+
+
+    // initialising private data structure
+    fat16_private->cluster_streamer     = disk_stream_new();
+    fat16_private->directory_streamer   = disk_stream_new();
+    fat16_private->fat_streamer         = disk_stream_new();
+
+    // general purpose streamer 
+    struct disk_stream* fat16_streamer  = disk_stream_new();
+
+    // reading the fs header in the disk into private data structure.
+    disk_stream_read(fat16_streamer, &fat16_private->header, sizeof(fat16_private->header));
+
+    if(fat16_private->header.extended.ebpb.signature != 0x29){
+
+        disk_stream_close(fat16_streamer);
+        kfree(fat16_private);
+        
+        _disk->fs_private_data = 0;
+
+        return -ERR_FS_INV_SIGN; // invalid signature
+    }
+
+    // link filesystem private data to the disk
+    _disk->fs_private_data = fat16_private;
+
+    if(fat16_get_root(_disk, fat16_private, &fat16_private->root) != SUCCESS){
+
+        disk_stream_close(fat16_streamer);
+        kfree(fat16_private);
+
+        _disk->fs_private_data = 0;
+
+        return -ERR_FS_ROOT_NOT_FOUND; // couldn't locate root directory on disk
+    }
+
+
+    disk_stream_close(fat16_streamer);
+
+
+    return SUCCESS; // filesystem resolved
+
+
 }
 
 void* fat16_open(struct disk* _disk, struct path* _path, uint8_t mode){

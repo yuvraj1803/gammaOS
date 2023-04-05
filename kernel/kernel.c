@@ -60,16 +60,20 @@ void kinit(){
     }
     load_page_directory(kernel_space->pd);
 
+    vfs_init(); // initialise the virtual file system layer
+    if(vfs_attach(fat16_init()) < 0){// attach fat16 fs into the primary disk
+        kpanic("[KERNEL ERROR]: Couldn't attack filesystem to primary disk");
+    } 
+
     if(!disk_init('A')){
         kpanic("[KERNEL ERROR]: Couldn't initialise primary disk...\n");
     }
 
-    vfs_init(); // initialise the virtual file system layer
-    vfs_attach(fat16_init()); // attach fat16 filesystem to the virtual filesystem layer
 
     enable_paging(); // enable paging
 
     __enable_irq(); // enable interrupts
 
     kprintf_wc("hello, yuvraj here!", 14);
+
 }
