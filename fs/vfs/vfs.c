@@ -26,7 +26,11 @@ struct file_descriptor* vfs_get_file_descriptor(uint32_t fd){
 struct file_descriptor* vfs_new_file_descriptor(){
     for(int index=0;index < FS_TOTAL_FILE_DESCRIPTORS;index++){
         if(fd_list[index] == 0){
+
             fd_list[index]->index = index;
+            fd_list[index]->position = 0;
+
+
             return fd_list[index];
         }
     }
@@ -96,4 +100,63 @@ int vfs_fopen(const char* filename, uint8_t mode){
     fd->private_data = file_data;   
 
     return fd->index;
+}
+
+int vfs_fread(uint8_t* dest, uint32_t size, uint32_t nmemb, int fd){
+
+    if(fd < 0 || fd >= FS_TOTAL_FILE_DESCRIPTORS){
+        return -ERR_INVARG;
+    }
+
+    struct file_descriptor* _fd = vfs_get_file_descriptor(fd);
+
+    if(_fd == 0){
+        return -ERR_FD_NOT_FOUND;
+    }
+
+
+    _fd->fs->read(_fd->disk,size, nmemb, dest);
+
+    return SUCCESS;
+
+}
+
+int vfs_fseek(int fd, uint32_t offset, uint8_t whence){
+    struct file_descriptor* _fd = vfs_get_file_descriptor(fd);
+
+    if(_fd == 0){
+        return -ERR_FD_NOT_FOUND;
+    }
+
+    _fd->fs->seek(_fd->disk, offset, whence);
+
+
+    return SUCCESS;
+}
+
+int vfs_fclose(int fd){
+
+    struct file_descriptor* _fd = vfs_get_file_descriptor(fd);
+
+    if(_fd == 0){
+        return -ERR_FD_NOT_FOUND;
+    }
+
+    _fd->fs->close(_fd->private_data);
+
+    return SUCCESS;
+
+}
+
+int vfs_fstat(int fd){
+    struct file_descriptor* _fd = vfs_get_file_descriptor(fd);
+    
+    if(_fd == 0){
+        return -ERR_FD_NOT_FOUND;
+    }
+
+    _fd->fs->fstat(_fd->private_data);
+
+    return SUCCESS;
+
 }

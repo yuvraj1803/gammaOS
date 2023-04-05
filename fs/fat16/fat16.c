@@ -25,10 +25,12 @@
 
 int8_t fat16_resolve(struct disk* _disk);
 void* fat16_open(struct disk* _disk, struct path* _path, uint8_t mode);
+int fat16_close(void* fd_private_data);
 
 struct filesystem fat16 = {
     .resolve = fat16_resolve,
-    .open    = fat16_open
+    .open    = fat16_open,
+    .close   = fat16_close
 };
 
 struct fat16_bpb{ // bios parameter block
@@ -223,5 +225,10 @@ int8_t fat16_resolve(struct disk* _disk){
 }
 
 void* fat16_open(struct disk* _disk, struct path* _path, uint8_t mode){
+    return 0;
+}
+
+int fat16_close(void* fd_private_data){
+
     return 0;
 }
