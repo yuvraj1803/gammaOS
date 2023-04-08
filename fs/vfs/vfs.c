@@ -115,7 +115,7 @@ int vfs_fread(uint8_t* dest, uint32_t size, uint32_t nmemb, int fd){
     }
 
 
-    _fd->fs->read(_fd->disk,size, nmemb, dest);
+    _fd->fs->read(_fd->disk,_fd->fs_file_descriptor,size, nmemb, dest);
 
     return SUCCESS;
 
@@ -155,7 +155,7 @@ int vfs_fstat(int fd, struct file_stat* stat){
         return -ERR_FD_NOT_FOUND;
     }
 
-    _fd->fs->fstat(_fd->fs_file_descriptor, stat);
+    _fd->fs->stat(_fd->fs_file_descriptor, stat);
 
     return SUCCESS;
 

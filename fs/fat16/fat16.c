@@ -26,13 +26,15 @@
 int8_t fat16_resolve(struct disk* _disk);
 void* fat16_open(struct disk* _disk, struct path* _path, uint8_t mode);
 int fat16_close(void* fd_private_data);
-int fat16_fstat(void* fd_private_data, struct file_stat* stat);
-
+int fat16_stat(void* fd_private_data, struct file_stat* stat);
+int fat16_read(struct disk* _disk, void* fd_private_data, uint32_t size, uint32_t nmemb, void* out);
 struct filesystem fat16 = {
     .resolve = fat16_resolve,
     .open    = fat16_open,
     .close   = fat16_close,
-    .fstat   = fat16_fstat
+    .stat    = fat16_stat,
+    .read    = fat16_read
+
 };
 
 struct fat16_bpb{ // bios parameter block
@@ -127,7 +129,7 @@ struct filesystem* fat16_init(){
 }
 
 // returns number of files in given directory.
-uint32_t fat16_total_files_in_directory(struct disk* _disk, struct fat16_private_data* fat16_private, struct fat16_directory* dir){
+static uint32_t fat16_total_files_in_directory(struct disk* _disk, struct fat16_private_data* fat16_private, struct fat16_directory* dir){
 
     // point streamer to the start of directory.
     disk_stream_seek(fat16_private->directory_streamer, dir->first_sector * _disk->sector_size);
@@ -147,7 +149,7 @@ uint32_t fat16_total_files_in_directory(struct disk* _disk, struct fat16_private
 
 }
 
-int8_t fat16_get_root(struct disk* _disk, struct fat16_private_data* fat16_private, struct fat16_directory* root){
+static int8_t fat16_get_root(struct disk* _disk, struct fat16_private_data* fat16_private, struct fat16_directory* root){
 
     uint32_t fat16_root_sector           = (fat16_private->header.bpb.fat_copies * fat16_private->header.bpb.sectors_per_fat) + fat16_private->header.bpb.reserved_sectors;
     uint32_t fat16_root_entries          = fat16_private->header.bpb.root_dir_entries;
@@ -178,7 +180,7 @@ int8_t fat16_get_root(struct disk* _disk, struct fat16_private_data* fat16_priva
 
 }
 
-void fat16_destroy_directory(struct fat16_directory* dir){
+static void fat16_destroy_directory(struct fat16_directory* dir){
     if(!dir) return;
 
     if(dir->files){
@@ -188,7 +190,7 @@ void fat16_destroy_directory(struct fat16_directory* dir){
     kfree(dir);
 }
 
-void fat16_destroy_unit(struct fat16_unit* fu){
+static void fat16_destroy_unit(struct fat16_unit* fu){
 
     if(fu->fat16_unit_type == FAT16_DIRECTORY){
         fat16_destroy_directory(fu->directory);
@@ -199,9 +201,102 @@ void fat16_destroy_unit(struct fat16_unit* fu){
     kfree(fu);
 }
 
-void fat16_destroy_fd(struct fat16_file_descriptor* fd){
+static void fat16_destroy_fd(struct fat16_file_descriptor* fd){
     fat16_destroy_unit(fd->unit);
     kfree(fd);
+}
+
+static uint16_t fat16_get_entry(struct disk* _disk, uint32_t cluster){
+    struct fat16_private_data* private_data = _disk->fs_private_data;
+
+    uint32_t fat16_table_position = private_data->header.bpb.reserved_sectors * _disk->sector_size;
+
+    struct disk_stream* streamer = private_data->fat_streamer;
+
+    // we point at the entry of the required cluster in the fat table
+    disk_stream_seek(streamer, fat16_table_position * cluster * FAT16_ENTRY_SIZE);
+
+    // we now write whatever is in that entry into this variable below. remember, fat16 enties are 2 bytes long.
+    uint16_t fat16_entry = 0;
+    disk_stream_read(streamer, &fat16_entry, sizeof(fat16_entry));
+
+
+    return fat16_entry;
+
+}
+
+static int fat16_get_cluster_from_offset(struct disk* _disk, uint32_t cluster, uint32_t offset){
+    // returns effective cluster given starting cluster and the offset.
+    struct fat16_private_data* private_data = _disk->fs_private_data;
+    uint32_t cluster_size_in_bytes = private_data->header.bpb.sectors_per_cluster * _disk->sector_size;
+    uint32_t current_cluster = cluster;
+    uint32_t additional_clusters = offset / cluster_size_in_bytes; // if the offset overflows the cluster size, we need to check the clusters ahead as well;
+
+    for(uint32_t cluster_index = 0;cluster_index < additional_clusters; cluster_index++){
+        uint32_t fat16_entry = fat16_get_entry(_disk, current_cluster);
+
+        if(fat16_entry == 0xFF8 || fat16_entry == 0xFFF){
+            // we have reached the end of the file.
+            return -ERR_INVARG;
+        }
+
+        // check if the sector is bad.
+        if(fat16_entry == FAT16_BAD_SECTOR){
+            return -ERR_INVARG;
+        }
+
+        // check if sector is reserved
+        if(fat16_entry == 0xFF0 || fat16_entry == 0xFF6){
+            return -ERR_INVARG;
+        }
+
+        if(fat16_entry == 0x00){
+            // corrupt fat table
+
+            return -ERR_INVARG;
+        }
+
+        current_cluster = fat16_entry;
+
+    }
+
+    return current_cluster;
+}
+
+static uint32_t fat16_cluster_to_sector(struct fat16_private_data* private, uint32_t cluster){
+    return private->root.last_sector + (cluster - 2) * private->header.bpb.sectors_per_cluster;
+}
+
+static int fat16_read_from_disk(struct disk* _disk, uint32_t first_cluster, uint32_t offset, uint32_t size, void* out){
+
+    struct fat16_private_data* f16pd = _disk->fs_private_data;
+    struct disk_stream* streamer = f16pd->cluster_streamer;
+
+    uint32_t total_cluster_size = f16pd->header.bpb.sectors_per_cluster * _disk->sector_size;
+    uint32_t current_cluster = fat16_get_cluster_from_offset(_disk, first_cluster, offset);
+
+    if(current_cluster < 0){
+        return -ERR_INVARG;
+    }    
+
+    uint32_t offset_inside_cluster = offset % total_cluster_size;
+
+    uint32_t first_sector = fat16_cluster_to_sector(f16pd, current_cluster);
+    uint32_t position_in_sector = first_sector * _disk->sector_size + offset;
+
+    // we can only read one cluster at a time
+    uint32_t size_readable = size > total_cluster_size ? total_cluster_size : size;
+
+
+    disk_stream_read(streamer, out, size_readable);
+    size -= size_readable;
+
+    if(size > 0){
+        fat16_read_from_disk(_disk, first_cluster, offset + size_readable, size, out + size_readable);
+    }
+
+    return SUCCESS;
+
 }
 
 
@@ -260,6 +355,37 @@ void* fat16_open(struct disk* _disk, struct path* _path, uint8_t mode){
     return 0;
 }
 
+int fat16_read(struct disk* _disk, void* fd_private_data, uint32_t size, uint32_t nmemb, void* out){
+
+    struct fat16_file_descriptor* fd = (struct fat16_file_descriptor*) (fd_private_data);
+    
+    if(fd->unit->fat16_unit_type == FAT16_DIRECTORY){
+        return -ERR_INVARG; // cant fread a directory :(
+    }
+
+    
+    int members_read_successfully = 0;
+
+    uint32_t offset = fd->file_position;
+
+    for(int member=0;member < nmemb;member++){
+
+        if(fat16_read_from_disk(_disk, fd->unit->file->low_16_bits_of_first_cluster | fd->unit->file->high_16_bits_of_first_cluster, offset,size,out) < 0){
+            break;
+        }
+        members_read_successfully++;
+
+        out += size;
+        offset += size;
+
+    }
+
+    return members_read_successfully;
+
+
+}
+
+
 int fat16_close(void* fd_private_data){
 
     fat16_destroy_fd((struct fat16_file_descriptor*) (fd_private_data));
@@ -268,7 +394,7 @@ int fat16_close(void* fd_private_data){
 
 }
 
-int fat16_fstat(void* fd_private_data, struct file_stat* stat){
+int fat16_stat(void* fd_private_data, struct file_stat* stat){
     
     struct fat16_file_descriptor* _fd = (struct fat16_file_descriptor*) (fd_private_data);
     struct fat16_unit*            _fu = _fd->unit;

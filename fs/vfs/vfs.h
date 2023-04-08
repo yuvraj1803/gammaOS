@@ -25,7 +25,7 @@ struct file_stat;
 
 typedef  int8_t (*fs_resolve)(struct disk* _disk);
 typedef  void*  (*fs_open)   (struct disk* _disk, struct path* _path, uint8_t mode);
-typedef  int    (*fs_read)   (struct disk* _disk, uint32_t size, uint32_t nmemb, uint8_t* dest);
+typedef  int    (*fs_read)   (struct disk* _disk, void* fd_private_data, uint32_t size, uint32_t nmemb, void* dest);
 typedef  int    (*fs_seek)   (struct disk* _disk, uint32_t offset, uint8_t whence);
 typedef  int    (*fs_close)  (void* fd_private_data);
 typedef  int    (*fs_fstat)  (void* fd_private_data, struct file_stat* stat);
@@ -38,7 +38,7 @@ struct filesystem{
     fs_read    read;
     fs_seek    seek;    
     fs_close   close;
-    fs_fstat   fstat;
+    fs_fstat   stat;
 
 };
 
