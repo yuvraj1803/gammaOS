@@ -97,7 +97,7 @@ int vfs_fopen(const char* filename, uint8_t mode){
     }
     fd->disk = _disk;
     fd->fs   = _disk->fs;
-    fd->private_data = file_data;   
+    fd->fs_file_descriptor = file_data;   
 
     return fd->index;
 }
@@ -142,20 +142,20 @@ int vfs_fclose(int fd){
         return -ERR_FD_NOT_FOUND;
     }
 
-    _fd->fs->close(_fd->private_data);
+    _fd->fs->close(_fd->fs_file_descriptor);
 
     return SUCCESS;
 
 }
 
-int vfs_fstat(int fd){
+int vfs_fstat(int fd, struct file_stat* stat){
     struct file_descriptor* _fd = vfs_get_file_descriptor(fd);
     
     if(_fd == 0){
         return -ERR_FD_NOT_FOUND;
     }
 
-    _fd->fs->fstat(_fd->private_data);
+    _fd->fs->fstat(_fd->fs_file_descriptor, stat);
 
     return SUCCESS;
 

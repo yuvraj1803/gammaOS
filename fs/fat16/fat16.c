@@ -26,11 +26,13 @@
 int8_t fat16_resolve(struct disk* _disk);
 void* fat16_open(struct disk* _disk, struct path* _path, uint8_t mode);
 int fat16_close(void* fd_private_data);
+int fat16_fstat(void* fd_private_data, struct file_stat* stat);
 
 struct filesystem fat16 = {
     .resolve = fat16_resolve,
     .open    = fat16_open,
-    .close   = fat16_close
+    .close   = fat16_close,
+    .fstat   = fat16_fstat
 };
 
 struct fat16_bpb{ // bios parameter block
@@ -102,8 +104,8 @@ struct fat16_unit{
     uint8_t fat16_unit_type; // directory/file
 };
 
-struct fat16_file_descriptor{
-    struct fat16_file* file;
+struct fat16_file_descriptor{ 
+    struct fat16_unit* unit; // can be a directory or a file.
     uint32_t           file_position; // position inside the file at given time
 };
 
@@ -225,10 +227,31 @@ int8_t fat16_resolve(struct disk* _disk){
 }
 
 void* fat16_open(struct disk* _disk, struct path* _path, uint8_t mode){
+    if(mode != READ){
+            return 0;
+    }
     return 0;
 }
 
 int fat16_close(void* fd_private_data){
 
     return 0;
+}
+
+int fat16_fstat(void* fd_private_data, struct file_stat* stat){
+    
+    struct fat16_file_descriptor* _fd = (struct fat16_file_descriptor*) (fd_private_data);
+    struct fat16_unit*            _fu = _fd->unit;
+
+    if(_fu->fat16_unit_type == FAT16_DIRECTORY){
+        return -ERR_INVARG; // cannot stat a directory
+    }
+
+    struct fat16_file* _file = _fu->file;
+
+    stat->size = _file->size;
+    stat->flags |= _file->attributes;
+
+    return SUCCESS;
+
 }

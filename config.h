@@ -29,6 +29,7 @@
 #define TASK_DEFAULT_STACK_BEGIN            0x3FF000
 #define TASK_DEFAULT_STACK_END              TASK_DEFAULT_STACK_BEGIN - TASK_STACK_SIZE
 
+#define PROCESS_MAX_PROCESSES               16
 
 #define VGA                     
 #endif

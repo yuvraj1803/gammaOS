@@ -17,13 +17,16 @@ enum{
     SEEK_END
 };
 
+// structure prototypes
 struct disk;
+struct file_stat;
+
 typedef  int8_t (*fs_resolve)(struct disk* _disk);
 typedef  void*  (*fs_open)   (struct disk* _disk, struct path* _path, uint8_t mode);
 typedef  int    (*fs_read)   (struct disk* _disk, uint32_t size, uint32_t nmemb, uint8_t* dest);
 typedef  int    (*fs_seek)   (struct disk* _disk, uint32_t offset, uint8_t whence);
 typedef  int    (*fs_close)  (void* fd_private_data);
-typedef  int    (*fs_fstat)  (void* fd_private_data);
+typedef  int    (*fs_fstat)  (void* fd_private_data, struct file_stat* stat);
 
 struct filesystem{
     char name[10];
@@ -37,7 +40,7 @@ struct filesystem{
 
 };
 
-enum FD_FLAGS{
+enum FSTAT_FLAGS{
     RDONLY,
     WTONLY
 };
@@ -45,11 +48,17 @@ enum FD_FLAGS{
 struct file_descriptor{
     uint32_t index;
     struct filesystem* fs;
-    void* private_data;
+    void* fs_file_descriptor; // file descriptor for that specific file system
     struct disk* disk;
 
-    uint32_t flags;
     uint32_t position;
+};
+
+struct file_stat{
+    uint32_t size;
+    uint8_t  mode;
+    uint32_t flags;
+
 };
 
 void vfs_init();
@@ -61,6 +70,6 @@ int vfs_fopen(const char* filename, uint8_t mode);
 int vfs_fread(uint8_t* dest, uint32_t size, uint32_t nmemb, int fd);
 int vfs_fseek(int fd, uint32_t offset, uint8_t whence);
 int vfs_fclose(int fd);
-int vfs_fstat(int fd);
+int vfs_fstat(int fd, struct file_stat* stat);
 
 #endif
