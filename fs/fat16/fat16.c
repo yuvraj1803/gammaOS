@@ -178,6 +178,33 @@ int8_t fat16_get_root(struct disk* _disk, struct fat16_private_data* fat16_priva
 
 }
 
+void fat16_destroy_directory(struct fat16_directory* dir){
+    if(!dir) return;
+
+    if(dir->files){
+        kfree(dir->files);
+    }
+
+    kfree(dir);
+}
+
+void fat16_destroy_unit(struct fat16_unit* fu){
+
+    if(fu->fat16_unit_type == FAT16_DIRECTORY){
+        fat16_destroy_directory(fu->directory);
+    }else{
+        kfree(fu->file);
+    }
+
+    kfree(fu);
+}
+
+void fat16_destroy_fd(struct fat16_file_descriptor* fd){
+    fat16_destroy_unit(fd->unit);
+    kfree(fd);
+}
+
+
 int8_t fat16_resolve(struct disk* _disk){
 
     struct fat16_private_data* fat16_private = (struct fat16_private_data*) kzalloc(sizeof(struct fat16_private_data));
@@ -235,7 +262,10 @@ void* fat16_open(struct disk* _disk, struct path* _path, uint8_t mode){
 
 int fat16_close(void* fd_private_data){
 
-    return 0;
+    fat16_destroy_fd((struct fat16_file_descriptor*) (fd_private_data));
+
+    return SUCCESS;
+
 }
 
 int fat16_fstat(void* fd_private_data, struct file_stat* stat){
@@ -250,8 +280,47 @@ int fat16_fstat(void* fd_private_data, struct file_stat* stat){
     struct fat16_file* _file = _fu->file;
 
     stat->size = _file->size;
+
+    stat->flags = 0;
     stat->flags |= _file->attributes;
 
     return SUCCESS;
+
+}
+
+int fat16_seek(void *fd_private_data, uint32_t offset, uint8_t seek_mode){
+
+    struct fat16_file_descriptor* fd = (struct fat16_file_descriptor*) fd_private_data;
+
+    if(fd->unit->fat16_unit_type == FAT16_DIRECTORY){
+        return -ERR_INVARG;
+    }
+
+    // if going out of the file.
+    if(fd->unit->file->size >= offset){
+        return -ERR_INVARG;
+    }
+
+    int rval = 0; // return val
+
+    switch(seek_mode)
+    {
+        case SEEK_SET:
+            fd->file_position = offset;
+            break;
+        case SEEK_CUR:
+            fd->file_position += offset;
+            break;
+        case SEEK_END:
+            rval = EOF;
+            break;
+        default:
+            rval = -ERR_INVARG;
+            break;
+
+    }
+
+    return rval;
+
 
 }

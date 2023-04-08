@@ -17,6 +17,8 @@ enum{
     SEEK_END
 };
 
+#define EOF     -1
+
 // structure prototypes
 struct disk;
 struct file_stat;
