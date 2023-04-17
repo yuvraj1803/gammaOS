@@ -24,3 +24,23 @@ char* strcpy(char* tgt, const char* src){
     return tgt;
 
 }
+
+char tolower(char c){
+    if(c >= 'a' && c <= 'z') return c; // already in lower case.
+    
+    return c + 32;
+}
+
+int strncmp(const char* s1, const char* s2, uint32_t n){
+    while(n--){
+        if(tolower(*s1) == tolower(*s2)){
+            s1++;
+            s2++;
+        }else{
+            if(*s1 < *s2) return -1;
+            else return 1;
+        }
+    }
+
+    return 0;
+}

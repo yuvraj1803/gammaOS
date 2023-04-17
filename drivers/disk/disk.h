@@ -17,6 +17,7 @@ struct disk{
     void* fs_private_data;
 };
 
+
 struct disk* disk_init(char disk_id);
 struct disk* disk_get(char disk_id);
 

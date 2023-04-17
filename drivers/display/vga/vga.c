@@ -47,6 +47,38 @@ uint32_t kprintf(const char * str){
 
 }
 
+// prints char into the screen.
+void kputchar(char c){
+    VGA_BASE[cursor_y * VGA_WIDTH + cursor_x] = kmake_char(c, 0xf);
+    cursor_x++;
+
+    if(cursor_x == VGA_WIDTH){
+        cursor_x = 0;
+        cursor_y++;
+    }
+}
+
+void kprint_int(int num) {
+  char buf[32];
+  int i = 0;
+  if (num == 0) {
+    kputchar('0');
+    return;
+  }
+  if (num < 0) {
+    kputchar('-');
+    num = -num;
+  }
+  while (num > 0) {
+    buf[i++] = num % 10 + '0';
+    num /= 10;
+  }
+  while (i > 0) {
+    kputchar(buf[--i]);
+  }
+}
+
+
 // kprintf with color
 uint32_t kprintf_wc(const char * str, uint8_t color){
     uint32_t strlen = 0;

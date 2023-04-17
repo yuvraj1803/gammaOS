@@ -5,6 +5,7 @@
 #include "../../kernel/kstatus.h"
 #include "../../mm/memory.h"
 #include "../../mm/heap/kheap.h"
+#include "../path.h"
 
 #define FAT16_SIGNATURE     0x29
 #define FAT16_ENTRY_SIZE    0x02
@@ -28,12 +29,15 @@ void* fat16_open(struct disk* _disk, struct path* _path, uint8_t mode);
 int fat16_close(void* fd_private_data);
 int fat16_stat(void* fd_private_data, struct file_stat* stat);
 int fat16_read(struct disk* _disk, void* fd_private_data, uint32_t size, uint32_t nmemb, void* out);
+int fat16_seek(void *fd_private_data, uint32_t offset, uint8_t seek_mode);
+
 struct filesystem fat16 = {
     .resolve = fat16_resolve,
     .open    = fat16_open,
     .close   = fat16_close,
     .stat    = fat16_stat,
-    .read    = fat16_read
+    .read    = fat16_read,
+    .seek    = fat16_seek
 
 };
 
@@ -139,13 +143,19 @@ static uint32_t fat16_total_files_in_directory(struct disk* _disk, struct fat16_
     struct fat16_file temp_file;
     memset(&temp_file, 0, sizeof(temp_file));
 
-    do{
+    while(1){
         disk_stream_read(fat16_private->directory_streamer, &temp_file, sizeof(temp_file));
+
+        if(temp_file.name[0] == 0x00) break; // end of entries.
+
+        if(temp_file.name[0] == 0xE5) continue;
+
         total_files++;
-    }while(temp_file.name[0] == 0xE5);
+
+    }
 
 
-    return total_files - 1;
+    return total_files;
 
 }
 
@@ -157,18 +167,19 @@ static int8_t fat16_get_root(struct disk* _disk, struct fat16_private_data* fat1
     uint32_t fat16_root_sectors_occupied = fat16_root_size / _disk->sector_size + (fat16_root_size % _disk->sector_size != 0);
 
     // first file of the root directory
-    root->files = (struct fat16_file*) kzalloc(fat16_root_size);
+    struct fat16_file* root_file = (struct fat16_file*) kzalloc(fat16_root_size);
     struct disk_stream* root_streamer = disk_stream_new();
 
-    if(root->files == 0x0){
+    if(root_file == 0x0){
         // couldn't create memory for root directory.
         return -ERR_MALLOC_FAIL;
     }
 
     // read the root directory into our structure.
     disk_stream_seek(root_streamer, fat16_root_sector * _disk->sector_size);
-    disk_stream_read(root_streamer, root->files, fat16_root_size);
+    disk_stream_read(root_streamer, root_file, fat16_root_size);
 
+    root->files        = root_file;
     root->first_sector = fat16_root_sector;
     root->last_sector  = root->first_sector + fat16_root_sectors_occupied - 1;
     root->total_files  = fat16_total_files_in_directory(_disk, fat16_private, root); 
@@ -264,7 +275,7 @@ static int fat16_get_cluster_from_offset(struct disk* _disk, uint32_t cluster, u
 }
 
 static uint32_t fat16_cluster_to_sector(struct fat16_private_data* private, uint32_t cluster){
-    return private->root.last_sector + (cluster - 2) * private->header.bpb.sectors_per_cluster;
+    return private->root.last_sector + (cluster - 2) * private->header.bpb.sectors_per_cluster + 1;
 }
 
 static int fat16_read_from_disk(struct disk* _disk, uint32_t first_cluster, uint32_t offset, uint32_t size, void* out){
@@ -287,7 +298,7 @@ static int fat16_read_from_disk(struct disk* _disk, uint32_t first_cluster, uint
     // we can only read one cluster at a time
     uint32_t size_readable = size > total_cluster_size ? total_cluster_size : size;
 
-
+    disk_stream_seek(streamer, position_in_sector);
     disk_stream_read(streamer, out, size_readable);
     size -= size_readable;
 
@@ -299,6 +310,152 @@ static int fat16_read_from_disk(struct disk* _disk, uint32_t first_cluster, uint
 
 }
 
+static void fat16_to_proper_string(char ** out, const char* in){
+
+    while(*in != 0x00 && *in != 0x20){
+        **out = *in;
+        *out+=1;
+        in+=1;
+    }
+
+    if(*in == 0x20){
+        **out = 0x00;
+    }
+
+}
+
+static void fat16_get_full_relative_name(struct fat16_file* file, char* out, uint32_t length){
+    memset(out, 0, length);
+    char* temp_out = out;
+
+    fat16_to_proper_string(&temp_out, (const char*) file->name);
+
+    if(file->extention[0] != 0x00 && file->extention[0] != 0x20){
+        *temp_out++ = '.';
+        fat16_to_proper_string(&temp_out, (const char*) file->extention);
+    }
+}
+
+static struct fat16_directory* fat16_load_directory(struct disk* _disk, struct fat16_file* file){
+
+    struct fat16_directory* dir = kzalloc(sizeof(struct fat16_directory));
+    struct fat16_private_data* private = _disk->fs_private_data;
+
+    if(file->attributes & FAT16_FILE_SUBDIRECTORY){
+        return -0;
+    }
+
+    if(!dir){
+        return 0;
+    }
+    // first cluster and sectors of the directory entries.
+    uint32_t first_cluster = file->low_16_bits_of_first_cluster | file->high_16_bits_of_first_cluster;
+    uint32_t first_sector  = private->root.last_sector + (first_cluster - 2) * private->header.bpb.sectors_per_cluster;
+    
+    dir->first_sector = first_sector;
+
+    uint32_t total_files = fat16_total_files_in_directory(_disk, private, dir);
+    dir->total_files = total_files;
+
+    uint32_t directory_size = total_files * sizeof(struct fat16_file);
+    dir->files = kzalloc(directory_size);
+
+    if(!dir->files){
+        return 0;
+    }
+
+    if(fat16_read_from_disk(_disk, first_cluster, 0, directory_size, dir->files) < 0){
+        return 0;
+    }
+
+    return dir;
+
+
+}
+
+static struct fat16_file* fat16_clone_file(struct fat16_file* file, uint32_t size){
+    struct fat16_file* file_copy = kzalloc(sizeof(struct fat16_file));
+
+    if(size < sizeof(struct fat16_file)){
+        return 0;
+    }
+
+    if(!file_copy){
+        return 0;
+    }
+
+    memcpy(file_copy, file, size);
+    return file_copy;
+}
+
+static struct fat16_unit* fat16_new_fat_unit_for_directory_unit(struct disk* _disk, struct fat16_file* file){
+    struct fat16_unit* unit = kzalloc(sizeof(struct fat16_unit));
+
+    if(!unit){
+        return 0;
+    }
+
+    if(file->attributes & FAT16_FILE_SUBDIRECTORY){
+        unit->directory = fat16_load_directory(_disk, file);
+        unit->fat16_unit_type = FAT16_DIRECTORY;
+        return unit;
+    }
+
+    unit->file = fat16_clone_file(file, sizeof(struct fat16_file));
+    unit->fat16_unit_type = FAT16_FILE;
+
+    return unit;
+
+}
+
+static struct fat16_unit* fat16_find_unit_in_directory(struct disk*_disk, struct fat16_directory* dir, const char* unit_str){
+    struct fat16_unit* unit = 0;
+    char temp_name[FS_MAX_PATH_UNIT_LENGTH];
+    memset(temp_name, 0, sizeof(temp_name));
+
+
+    for(int dir_unit =0 ;dir_unit < dir->total_files;dir_unit++){
+            fat16_get_full_relative_name(&dir->files[dir_unit], temp_name, sizeof(temp_name));
+
+            uint32_t sz = sizeof(temp_name);
+
+            if(strncmp((const char*) temp_name, (const char*) unit_str, sizeof(temp_name)) == 0){ // if the strings match
+                unit = fat16_new_fat_unit_for_directory_unit(_disk, &dir->files[dir_unit]);
+            }
+
+    }
+
+    return unit;
+
+}
+
+static struct fat16_unit* fat16_get_unit(struct disk* _disk, struct path_unit* _path){
+    struct fat16_private_data* private = _disk->fs_private_data;
+    struct fat16_unit* root = fat16_find_unit_in_directory(_disk, &private->root, _path->unit_str);
+    
+    struct fat16_unit* current_unit = root;
+
+    if(!root){
+        return 0;
+    }
+
+    struct path_unit* next_path_unit = _path->next_unit;
+
+    while(next_path_unit != 0){
+        if(current_unit->fat16_unit_type == FAT16_DIRECTORY){
+            struct fat16_unit* temp_unit = fat16_find_unit_in_directory(_disk, current_unit->directory, next_path_unit->unit_str);
+            current_unit = temp_unit;
+            next_path_unit = next_path_unit->next_unit;
+        }else{
+            current_unit = 0;
+            break;
+        }
+    }
+
+    return current_unit;
+
+
+}
 
 int8_t fat16_resolve(struct disk* _disk){
 
@@ -352,7 +509,17 @@ void* fat16_open(struct disk* _disk, struct path* _path, uint8_t mode){
     if(mode != READ){
             return 0;
     }
-    return 0;
+
+    struct fat16_file_descriptor* fd = kzalloc(sizeof(struct fat16_file_descriptor));
+
+    fd->file_position = 0;
+    fd->unit = fat16_get_unit(_disk, _path->units);
+
+    if(!fd->unit){
+        return 0;
+    }
+
+    return fd;
 }
 
 int fat16_read(struct disk* _disk, void* fd_private_data, uint32_t size, uint32_t nmemb, void* out){
@@ -423,7 +590,7 @@ int fat16_seek(void *fd_private_data, uint32_t offset, uint8_t seek_mode){
     }
 
     // if going out of the file.
-    if(fd->unit->file->size >= offset){
+    if(fd->unit->file->size <= offset){
         return -ERR_INVARG;
     }
 

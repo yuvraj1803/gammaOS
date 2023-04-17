@@ -3,30 +3,41 @@
 #include "../../kernel/kernel.h"
 #include "../../mm/heap/kheap.h"
 #include "../../fs/vfs/vfs.h"
+#include "../../mm/memory.h"
 
 #define READ_SECTORS_WITH_RETRY             0x20
 #define SECTOR_BUFFER_REQUIRES_SERVICING    0b00001000
 #define SECTOR_SIZE_IN_BYTES                512
 
-struct disk disks[MAX_NUMBER_OF_DISKS];
+struct disk*   disks[MAX_NUMBER_OF_DISKS];
+uint8_t        disks_already_initialised = 0;
 
 // initialise memory for MAX_NUMBER_OF_DISKS and add primary disk. Default disk is A
 struct disk* disk_init(char disk_id){
+
+    if(!disks_already_initialised){
+        for(int disk=0;disk<MAX_NUMBER_OF_DISKS;disk++){
+            disks[disk] = kzalloc(sizeof(struct disk));
+        }
+        disks_already_initialised = 1;
+    }
 
     if(disk_id < 'A' || disk_id >= 'A' + MAX_NUMBER_OF_DISKS){
         return 0; // illegal disk begin initialised.
     }
 
-    disks[disk_id-'A'].disk_id = disk_id;
-    disks[disk_id-'A'].sector_size  = 512;
 
-    disks[disk_id-'A'].fs = vfs_resolve(&disks[disk_id-'A']);
+    disks[disk_id-'A']->disk_id = disk_id;
+    disks[disk_id-'A']->sector_size  = 512;
 
-    return &disks[disk_id-'A'];
+    disks[disk_id-'A']->fs = vfs_resolve(disks[disk_id-'A']);
+
+    return disks[disk_id-'A'];
 }
 
-struct disk* disk_get(char disk_id){
-    return &disks[disk_id-'A'];
+struct disk* disk_get(char disk_id){    
+
+    return disks[disk_id-'A'];
 }
 
 struct disk_stream* disk_stream_new(){

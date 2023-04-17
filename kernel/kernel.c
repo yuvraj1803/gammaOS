@@ -11,8 +11,9 @@
 #include "gdt/gdt.h"
 #include "../mm/memory.h"
 #include "task/tss/tss.h"
-#include "../fs/vfs/vfs.h"
+#include "../fs/file.h"
 #include "../fs/fat16/fat16.h"
+#include "kstatus.h"
 
 struct vaddr_space* kernel_space;
 struct tss _tss;
@@ -26,6 +27,7 @@ struct gdt_structured _gdt_s[GDT_ENTRIES] = {
     {.base = (uint32_t)&_tss, .limit=sizeof(struct tss), .attrubutes=0xe9} // tss
     
 };
+
 
 void kinit(){
 #if defined(VGA)
@@ -60,20 +62,24 @@ void kinit(){
     }
     load_page_directory(kernel_space->pd);
 
-    vfs_init(); // initialise the virtual file system layer
+
+    file_init(); // initialise the virtual file system layer
     if(vfs_attach(fat16_init()) < 0){// attach fat16 fs into the primary disk
-        kpanic("[KERNEL ERROR]: Couldn't attack filesystem to primary disk");
+        kpanic("[KERNEL ERROR]: Couldn't attach filesystem to primary disk");
     } 
+
 
     if(!disk_init('A')){
         kpanic("[KERNEL ERROR]: Couldn't initialise primary disk...\n");
     }
 
-
     enable_paging(); // enable paging
 
     __enable_irq(); // enable interrupts
 
-    kprintf_wc("hello, yuvraj here!", 14);
+    int fd = fopen("A:/test.txt",'r');
+
+
+    // kprintf_wc("hello, yuvraj here!", 14);
 
 }

@@ -5,14 +5,17 @@
 #include "../parser/parser.h"
 #include "../path.h"
 #include "../../drivers/disk/disk.h"
-
+#include "../../kernel/kernel.h"
+#include "../../mm/heap/kheap.h"
 
 struct filesystem*      fs_list[FS_TOTAL_FILESYSTEMS];
 struct file_descriptor* fd_list[FS_TOTAL_FILE_DESCRIPTORS];
 
 void vfs_init(){
+    
     memset(fs_list, 0, sizeof(fs_list));
-    memset(fd_list, 0, sizeof(fs_list));
+    memset(fd_list, 0, sizeof(fd_list));
+    
 }
 
 struct file_descriptor* vfs_get_file_descriptor(uint32_t fd){
@@ -26,10 +29,11 @@ struct file_descriptor* vfs_get_file_descriptor(uint32_t fd){
 struct file_descriptor* vfs_new_file_descriptor(){
     for(int index=0;index < FS_TOTAL_FILE_DESCRIPTORS;index++){
         if(fd_list[index] == 0){
+            
+            struct file_descriptor* new_fd = (struct file_descriptor*) kzalloc(sizeof(struct file_descriptor));
+            new_fd->index = index;
 
-            fd_list[index]->index = index;
-            fd_list[index]->position = 0;
-
+            fd_list[index] = new_fd;
 
             return fd_list[index];
         }
@@ -82,7 +86,7 @@ int vfs_fopen(const char* filename, uint8_t mode){
     struct path* file_path = parse_path(filename);
     char drive_id = file_path->drive_id;
 
-    struct disk* _disk = disk_get(drive_id - 'A');
+    struct disk* _disk = disk_get(drive_id);
 
     void* file_data = _disk->fs->open(_disk, file_path, mode);
 
@@ -128,7 +132,7 @@ int vfs_fseek(int fd, uint32_t offset, uint8_t whence){
         return -ERR_FD_NOT_FOUND;
     }
 
-    _fd->fs->seek(_fd->disk, offset, whence);
+    _fd->fs->seek(_fd->fs_file_descriptor, offset, whence);
 
 
     return SUCCESS;
@@ -142,7 +146,9 @@ int vfs_fclose(int fd){
         return -ERR_FD_NOT_FOUND;
     }
 
+    fd_list[_fd->index] = 0;
     _fd->fs->close(_fd->fs_file_descriptor);
+
 
     return SUCCESS;
 
