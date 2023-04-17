@@ -1,3 +1,8 @@
+/*
+ *
+ * Copyright (c) 2023 Yuvraj Sakshith <ysakshith@gmail.com>
+ *
+ */
 #include "vfs.h"
 #include "../../config.h"
 #include "../../kernel/kstatus.h"

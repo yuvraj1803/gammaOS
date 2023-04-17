@@ -1,3 +1,9 @@
+/*
+ *
+ * Copyright (c) 2023 Yuvraj Sakshith <ysakshith@gmail.com>
+ *
+ */
+
 #include "paging.h"
 #include "../heap/kheap.h"
 #include "../../kernel/kstatus.h"

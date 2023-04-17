@@ -1,3 +1,9 @@
+/*
+ *
+ * Copyright (c) 2023 Yuvraj Sakshith <ysakshith@gmail.com>
+ *
+ */
+
 #ifndef __PATH_H__
 #define __PATH_H__
 

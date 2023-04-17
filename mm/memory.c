@@ -1,3 +1,9 @@
+/*
+ *
+ * Copyright (c) 2023 Yuvraj Sakshith <ysakshith@gmail.com>
+ *
+ */
+
 #include "memory.h"
 
 // starting from the base address, sets 'size' number of bytes to value provided.

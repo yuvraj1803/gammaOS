@@ -1,3 +1,9 @@
+/*
+ *
+ * Copyright (c) 2023 Yuvraj Sakshith <ysakshith@gmail.com>
+ *
+ */
+
 #include "fat16.h"
 #include "../vfs/vfs.h"
 #include "../../string/string.h"

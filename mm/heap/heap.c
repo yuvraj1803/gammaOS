@@ -1,3 +1,9 @@
+/*
+ *
+ * Copyright (c) 2023 Yuvraj Sakshith <ysakshith@gmail.com>
+ *
+ */
+
 #include "heap.h"
 #include "kstatus.h"
 #include "../../kernel/kernel.h"

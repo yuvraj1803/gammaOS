@@ -1,3 +1,9 @@
+/*
+ *
+ * Copyright (c) 2023 Yuvraj Sakshith <ysakshith@gmail.com>
+ *
+ */
+
 #include "disk.h"
 #include "../../io/io.h"
 #include "../../kernel/kernel.h"
