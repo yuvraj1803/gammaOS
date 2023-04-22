@@ -3,3 +3,131 @@
  * Copyright (c) 2023 Yuvraj Sakshith <ysakshith@gmail.com>
  *
  */
+
+#include "process.h"
+#include "../../../config.h"
+#include "../../../kernel/kstatus.h"
+#include "../../../string/string.h"
+#include "../../../fs/file.h"
+#include "../../../mm/memory.h"
+#include "../task.h"
+#include "../../../mm/heap/kheap.h"
+
+struct process* current_process = 0;
+static struct process* process_list[PROCESS_MAX_PROCESSES];
+
+void process_init(){
+    memset(process_list, 0, sizeof(process_list));
+}
+
+struct process* process_get(uint16_t pid){
+    
+    if(pid < 0 || pid >= PROCESS_MAX_PROCESSES){
+        return 0;
+    }
+
+    return process_list[pid];
+}
+
+static uint16_t process_get_free_process_id(){
+
+    uint16_t pid = -ERR_MAX_PROCESS_LIMIT_REACHED;
+
+    for(int _pid = 0;_pid < PROCESS_MAX_PROCESSES;_pid++){
+        if(process_list[_pid] == 0){
+            pid = _pid;
+            break;
+        }
+    }
+
+    return pid;
+
+}
+
+static int8_t process_load_binary(struct process* _process){
+    char* filename = _process->file;
+
+    int fd = fopen(filename, 'r');
+
+    if(fd < 0){
+        return -ERR_PROCESS_LOAD_FAIL;
+    }
+
+    struct file_stat stat;
+    if(fstat(fd, &stat) == -ERR_FD_NOT_FOUND){
+        fclose(fd);
+        return -ERR_PROCESS_LOAD_FAIL;
+    }
+
+    _process->size = stat.size;
+    _process->physical_address = kzalloc(_process->size);
+
+    if(!_process->physical_address){
+        fclose(fd);
+        return -ERR_PROCESS_LOAD_FAIL;
+    }
+
+    if(fread(_process->physical_address, _process->size, 1, fd) < 0){
+        kfree(_process->physical_address);
+        fclose(fd);
+        return -ERR_PROCESS_LOAD_FAIL;
+    }
+
+    _process->file_type = PROCESS_BIN_FILE;
+
+    fclose(fd);
+
+    return SUCCESS;
+
+}
+
+static int8_t process_load_data(struct process* _process){
+
+    return process_load_binary(_process);
+
+}
+
+struct process* process_new(const char* filename){
+
+    struct process* _process = kzalloc(sizeof(struct process));
+
+    if(!_process){
+        return 0;
+    }
+
+    _process->pid = process_get_free_process_id();
+
+    if(_process->pid == -ERR_MAX_PROCESS_LIMIT_REACHED){
+        kfree(_process);
+        return 0;
+    }
+
+    strcpy(_process->file, filename);
+    _process->stack = kzalloc(PROCESS_MAX_PROCESS_STACK_SIZE);
+
+    if(!_process->stack){
+        kfree(_process);
+        return 0;
+    }
+
+    _process->task = new_task(_process);
+
+    if(!_process->task){
+        kfree(_process->stack);
+        return 0;
+    }
+    
+    if(process_load_data(_process) < 0){
+        kfree(_process->stack);
+        close_task(_process->task);
+        return 0;
+    }
+
+
+    process_list[_process->pid] = _process;
+
+
+    return _process;
+
+
+}

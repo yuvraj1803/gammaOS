@@ -36,6 +36,8 @@
 #define TASK_DEFAULT_STACK_END              TASK_DEFAULT_STACK_BEGIN - TASK_STACK_SIZE
 
 #define PROCESS_MAX_PROCESSES               16
+#define PROCESS_MAX_PROCESS_MEM_ALLOCATIONS 1024
+#define PROCESS_MAX_PROCESS_STACK_SIZE      65536
 
 #define VGA                     
 #endif

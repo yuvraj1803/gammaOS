@@ -9,7 +9,7 @@
 #include "../config.h"
 #include "../../mm/heap/kheap.h"
 
-struct task* cur_task; // pointer to currently running task
+struct task* cur_task;       // pointer to currently running task
 struct task* task_list_head; // pointer to head of linked list of tasks
 struct task* task_list_tail; // pointer to tail of linked list of tasks
 
@@ -47,13 +47,14 @@ struct task* next_task(){
 }
 
 
-int8_t init_task(struct task* _task){
+static int8_t init_task(struct task* _task, struct process* _process){
     _task->task_space = create_virtual_address_space(PAGE_PRESENT | PAGE_USER_ACCESS);
     if(_task->task_space == 0x0) return -ERR_TASK_FAIL;
 
     _task->registers.ip =  TASK_DEFAULT_START;
     _task->registers.esp = TASK_DEFAULT_STACK_BEGIN;
     _task->registers.ss = USER_DATA_SELECTOR;
+    _task->process = _process;
 
     return SUCCESS;
 
@@ -63,13 +64,13 @@ struct task* current_task(){
     return cur_task;
 }
 
-struct task* new_task(){
+struct task* new_task(struct process* _process){
     struct task* _task = (struct task*) kzalloc(sizeof(struct task));
     if(_task == 0x0){
         return 0x0; // couldn't allocate memory for the task
     }
 
-    if(init_task(_task) == -ERR_TASK_FAIL) return 0x0; // failed to initialise task.
+    if(init_task(_task, _process) == -ERR_TASK_FAIL) return 0x0; // failed to initialise task.
 
     task_list_add(_task);
 

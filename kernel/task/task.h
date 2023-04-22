@@ -9,6 +9,7 @@
 
 #include "../../config.h"
 #include "../../mm/paging/paging.h"
+#include "process/process.h"
 
 
 struct reg{
@@ -30,18 +31,20 @@ struct reg{
     uint32_t flags;
 
 };
-
+struct process;
 struct task{
     struct vaddr_space* task_space; // task virtual address space structure.
     struct reg registers; // task processor state.
+
+    struct process* process;
 
     struct task* next_task;
     struct task* prev_task;
 };
 
-struct task* current_task();
-struct task*     new_task();
+struct task*    current_task();
+struct task*    new_task(struct process* _process);
 struct task*    next_task();
-int8_t close_task(struct task* _task);
+int8_t          close_task(struct task* _task);
 
 #endif

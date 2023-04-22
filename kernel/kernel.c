@@ -20,6 +20,7 @@
 #include "../fs/file.h"
 #include "../fs/fat16/fat16.h"
 #include "kstatus.h"
+#include "task/process/process.h"
 
 struct vaddr_space* kernel_space;
 struct tss _tss;
@@ -68,12 +69,12 @@ void kinit(){
     }
     load_page_directory(kernel_space->pd);
 
+    process_init();
 
     file_init(); // initialise the virtual file system layer
     if(vfs_attach(fat16_init()) < 0){// attach fat16 fs into the primary disk
         kpanic("[KERNEL ERROR]: Couldn't attach filesystem to primary disk");
     } 
-
 
     if(!disk_init('A')){
         kpanic("[KERNEL ERROR]: Couldn't initialise primary disk...\n");
@@ -85,6 +86,11 @@ void kinit(){
 
     int fd = fopen("A:/test.txt",'r');
 
+    uint8_t buffer[100];
+
+    fread(buffer, 100, 1, fd);
+
+    kprintf((const char*)   buffer);
 
     // kprintf_wc("hello, yuvraj here!", 14);
 
