@@ -6,6 +6,7 @@
 
 #include "task.h"
 #include "../kstatus.h"
+#include "../../drivers/display/vga/vga.h"
 #include "../config.h"
 #include "../../mm/heap/kheap.h"
 
@@ -59,6 +60,27 @@ static int8_t init_task(struct task* _task, struct process* _process){
     return SUCCESS;
 
 }
+
+void task_switch(struct task* _task){
+    cur_task = _task;
+    load_page_directory(_task->task_space->pd);
+}
+
+void switch_current_page_directory_to_current_task_pd(){
+    set_all_segments_to_user_data_segment();
+    task_switch(cur_task);
+}
+
+void gammaos_first_ever_task(){
+    if(!cur_task){
+        kpanic("gammaos_first_ever_task: first task not provided!\n");
+    }
+
+    task_switch(task_list_head);
+    enter_task(&cur_task->registers);
+
+}
+
 
 struct task* current_task(){
     return cur_task;

@@ -1,4 +1,4 @@
-FILES = ./build/kernel.s.o ./build/kernel.o ./build/idt/idt.s.o ./build/idt/idt.o ./build/mm/memory.o ./build/io/io.s.o ./build/mm/heap/heap.o ./build/mm/heap/kheap.o ./build/mm/paging/paging.s.o ./build/mm/paging/paging.o ./build/drivers/disk/disk.o ./build/drivers/display/vga/vga.o ./build/fs/parser/parser.o ./build/string/string.o ./build/debug/debug.o ./build/gdt/gdt.o ./build/gdt/gdt.s.o ./build/task/tss/tss.s.o ./build/task/task.o ./build/fs/fat16/fat16.o ./build/fs/vfs/vfs.o ./build/fs/file.o ./build/task/process/process.o
+FILES = ./build/kernel.s.o ./build/kernel.o ./build/idt/idt.s.o ./build/idt/idt.o ./build/mm/memory.o ./build/io/io.s.o ./build/mm/heap/heap.o ./build/mm/heap/kheap.o ./build/mm/paging/paging.s.o ./build/mm/paging/paging.o ./build/drivers/disk/disk.o ./build/drivers/display/vga/vga.o ./build/fs/parser/parser.o ./build/string/string.o ./build/debug/debug.o ./build/gdt/gdt.o ./build/gdt/gdt.s.o ./build/task/tss/tss.s.o ./build/task/task.o ./build/fs/fat16/fat16.o ./build/fs/vfs/vfs.o ./build/fs/file.o ./build/task/process/process.o ./build/task/task.s.o
 INCLUDES = -I./kernel
 FLAGS = -g -ffreestanding -falign-jumps -falign-functions -falign-labels -falign-loops -fstrength-reduce -fomit-frame-pointer -finline-functions -Wno-unused-function -fno-builtin -Werror -Wno-unused-label -Wno-cpp -Wno-unused-parameter -Wno-unused-variable -Wno-unused-value  -nostdlib -nostartfiles -nodefaultlibs -Wall -O0 -Iinc
 
@@ -91,6 +91,9 @@ all: ./bin/boot.bin ./bin/kernel.bin
 	
 ./build/task/process/process.o: ./kernel/task/process/process.c
 	i686-elf-gcc $(INCLUDES) -I./kernel/task/process $(FLAGS) -std=gnu99 -c ./kernel/task/process/process.c -o ./build/task/process/process.o
+
+./build/task/task.s.o: ./kernel/task/task.s
+	nasm -f elf -g ./kernel/task/task.s -o ./build/task/task.s.o
 
 
 clean:

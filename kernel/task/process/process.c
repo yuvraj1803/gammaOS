@@ -90,7 +90,7 @@ static int8_t process_load_data(struct process* _process){
 
 static int8_t process_map_binary(struct process* _process){
 
-    if(paging_map_range(_process->task->task_space, (void*)TASK_DEFAULT_START, _process->physical_address, (void*)paging_align_to_page((uint32_t)_process->physical_address + _process->size), PAGE_WRITE_ACCESS | PAGE_PRESENT | PAGE_USER_ACCESS) < 0){
+    if(paging_map_range(_process->task->task_space, (void*)TASK_DEFAULT_START, _process->physical_address, (void*)  paging_align_to_page((uint32_t)_process->physical_address + _process->size), PAGE_WRITE_ACCESS | PAGE_PRESENT | PAGE_USER_ACCESS) < 0){
         return -ERR_PROCESS_MAPPING_FAILED;
     }
 
