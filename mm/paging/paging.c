@@ -31,6 +31,39 @@ uint8_t address_page_aligned(void *vaddr)
     return (uint32_t)vaddr % PAGE_SIZE == 0;
 }
 
+uint32_t paging_align_to_page(uint32_t address){
+    if(address %PAGE_SIZE){
+        return address - address%PAGE_SIZE + PAGE_SIZE;
+    }
+
+    return address; // already aligned.
+}
+
+
+int8_t paging_map_range(struct vaddr_space* _vspace, void* vaddr, void* paddr, void* endaddr, int flags){
+
+    if(!address_page_aligned(vaddr) || !address_page_aligned(paddr) || !address_page_aligned(endaddr)){
+        return -ERR_PROCESS_MAPPING_FAILED;
+    }
+
+    if((uint32_t) endaddr < (uint32_t) paddr) return -ERR_PROCESS_MAPPING_FAILED;
+
+    uint32_t total_pages = ((uint32_t)endaddr - (uint32_t)paddr)/PAGE_SIZE;
+
+    for(uint32_t page=0;page < total_pages;page++){
+        map_vaddr_to_val(_vspace->pd, vaddr, (uint32_t) paddr | flags);
+
+        vaddr += PAGE_SIZE;
+        paddr += PAGE_SIZE;
+    }
+
+
+    return SUCCESS;
+
+}
+
+
+
 int8_t get_page_indices(void *vaddr, uint32_t *pd_entry, uint32_t *pt_entry)
 {
     if (!address_page_aligned(vaddr))

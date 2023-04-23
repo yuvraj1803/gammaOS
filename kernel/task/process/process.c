@@ -12,6 +12,7 @@
 #include "../../../mm/memory.h"
 #include "../task.h"
 #include "../../../mm/heap/kheap.h"
+#include "../../../mm/paging/paging.h"
 
 struct process* current_process = 0;
 static struct process* process_list[PROCESS_MAX_PROCESSES];
@@ -87,6 +88,31 @@ static int8_t process_load_data(struct process* _process){
 
 }
 
+static int8_t process_map_binary(struct process* _process){
+
+    if(paging_map_range(_process->task->task_space, (void*)TASK_DEFAULT_START, _process->physical_address, (void*)paging_align_to_page((uint32_t)_process->physical_address + _process->size), PAGE_WRITE_ACCESS | PAGE_PRESENT | PAGE_USER_ACCESS) < 0){
+        return -ERR_PROCESS_MAPPING_FAILED;
+    }
+
+    return SUCCESS;
+
+}
+
+static int8_t process_map_memory(struct process* _process){
+
+    // if file type is binary
+    if(_process->file_type == PROCESS_BIN_FILE){
+        int8_t process_map_binary_res = process_map_binary(_process);
+        if(process_map_binary_res < 0) return process_map_binary_res;
+    }
+
+    int8_t process_map_stack_res = paging_map_range(_process->task->task_space, (void*) TASK_DEFAULT_STACK_BEGIN, _process->stack, (void*)paging_align_to_page((uint32_t)_process->stack + TASK_STACK_SIZE), PAGE_PRESENT | PAGE_USER_ACCESS | PAGE_WRITE_ACCESS);
+    if(process_map_stack_res < 0) return process_map_stack_res;
+
+    return SUCCESS;
+
+}
+
 struct process* process_new(const char* filename){
 
     struct process* _process = kzalloc(sizeof(struct process));
@@ -114,16 +140,23 @@ struct process* process_new(const char* filename){
 
     if(!_process->task){
         kfree(_process->stack);
+        kfree(_process);
         return 0;
     }
     
     if(process_load_data(_process) < 0){
         kfree(_process->stack);
         close_task(_process->task);
+        kfree(_process);
         return 0;
     }
 
-
+    if(process_map_memory(_process) < 0){
+        kfree(_process->stack);
+        close_task(_process->task);
+        kfree(_process);
+        return 0;
+    }
     process_list[_process->pid] = _process;
 
 

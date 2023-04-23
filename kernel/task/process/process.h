@@ -12,7 +12,7 @@
 
 void process_init();
 struct process* process_get(uint16_t pid);
-struct process* process_new(const char* filename);
+struct process* process_new(const char* filename);  
 
 enum{
     PROCESS_ELF_FILE,
