@@ -51,4 +51,6 @@ void enter_task(struct reg* registers);
 void restore_gprs(struct reg* registers);
 void set_all_segments_to_user_data_segment();
 
+
+void gammaos_first_ever_task();
 #endif

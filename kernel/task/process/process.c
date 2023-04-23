@@ -13,11 +13,14 @@
 #include "../task.h"
 #include "../../../mm/heap/kheap.h"
 #include "../../../mm/paging/paging.h"
+// #include "../../../kernel/kernel.h"
 
 struct process* current_process = 0;
 static struct process* process_list[PROCESS_MAX_PROCESSES];
 
-void process_init(){
+uint8_t processes_initialised = 0;
+
+static void process_init(){
     memset(process_list, 0, sizeof(process_list));
 }
 
@@ -115,6 +118,10 @@ static int8_t process_map_memory(struct process* _process){
 
 struct process* process_new(const char* filename){
 
+    if(!processes_initialised){
+        process_init();
+    }
+
     struct process* _process = kzalloc(sizeof(struct process));
 
     if(!_process){
@@ -150,6 +157,8 @@ struct process* process_new(const char* filename){
         kfree(_process);
         return 0;
     }
+
+    
 
     if(process_map_memory(_process) < 0){
         kfree(_process->stack);

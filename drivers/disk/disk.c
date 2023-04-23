@@ -38,6 +38,7 @@ struct disk* disk_init(char disk_id){
 
     disks[disk_id-'A']->fs = vfs_resolve(disks[disk_id-'A']);
 
+
     return disks[disk_id-'A'];
 }
 

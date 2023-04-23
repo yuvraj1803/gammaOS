@@ -54,7 +54,7 @@ restore_gprs:
  
     mov eax, [eax] ;; finally restoring eax
 
-    pop esp
+    pop ebp
 
     ret
 

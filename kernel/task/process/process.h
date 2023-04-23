@@ -10,7 +10,6 @@
 #include "../../../config.h"
 #include <stdint.h>
 
-void process_init();
 struct process* process_get(uint16_t pid);
 struct process* process_new(const char* filename);  
 

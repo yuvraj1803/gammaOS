@@ -21,6 +21,7 @@
 #include "../fs/fat16/fat16.h"
 #include "kstatus.h"
 #include "task/process/process.h"
+#include "task/task.h"
 
 struct vaddr_space* kernel_space;
 struct tss _tss;
@@ -69,8 +70,6 @@ void kinit(){
     }
     load_page_directory(kernel_space->pd);
 
-    process_init();
-
     file_init(); // initialise the virtual file system layer
     if(vfs_attach(fat16_init()) < 0){// attach fat16 fs into the primary disk
         kpanic("[KERNEL ERROR]: Couldn't attach filesystem to primary disk");
@@ -84,14 +83,24 @@ void kinit(){
 
     __enable_irq(); // enable interrupts
 
-    int fd = fopen("A:/test.txt",'r');
 
-    uint8_t buffer[100];
+    struct process* p = 0;
+    p = process_new("A:/yuvr.bin");
 
-    fread(buffer, 100, 1, fd);
+    if(!p){
+        kpanic("process not created!!:(\n");
+    }
+    
+    gammaos_first_ever_task();
 
-    kprintf((const char*)   buffer);
+    // int fd = fopen("A:/yuvr.bin",'r');
+    // char buf[100];
+    // fread((uint8_t*)buf,100,1,fd);
+    
+    // kprintf(buf);
 
-    // kprintf_wc("hello, yuvraj here!", 14);
+    
+
+
 
 }

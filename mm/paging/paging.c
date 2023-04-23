@@ -142,7 +142,8 @@ void destroy_virtual_address_space(struct vaddr_space* _space){
 
     // free every page table one by one.
     for(int pd_entry=0;pd_entry < PAGE_DIR_ENTRIES;pd_entry++){
-        uint32_t* pt = (uint32_t*) (_space->pd->page_directory_entries[pd_entry] & 0xfffff000);
+        uint32_t entry = _space->pd->page_directory_entries[pd_entry];
+        uint32_t* pt = (uint32_t*) (entry & 0xfffff000);
         kfree(pt);
     }
 

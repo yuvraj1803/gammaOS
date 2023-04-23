@@ -83,9 +83,9 @@ void free_blocks(struct heap* _heap, uint32_t start_block){
 
 
         for(uint32_t block = start_block; block < _heap->entry_table->num_entries; block++){
-            if(!(_heap->entry_table->entries[block] & HEAP_BLOCK_HAS_NEXT)) break;
 
             _heap->entry_table->entries[block] = HEAP_BLOCK_ENTRY_FREE;
+            if(!(_heap->entry_table->entries[block] & HEAP_BLOCK_HAS_NEXT)) break;
 
         }
 

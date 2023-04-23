@@ -18,6 +18,7 @@ static void task_list_add(struct task* _task){
     if(task_list_head == 0x0){
         task_list_head = _task;
         task_list_tail = _task;
+        cur_task = _task;
     }else{
         task_list_tail->next_task = _task;
         _task->prev_task = task_list_tail;
@@ -55,6 +56,7 @@ static int8_t init_task(struct task* _task, struct process* _process){
     _task->registers.ip =  TASK_DEFAULT_START;
     _task->registers.esp = TASK_DEFAULT_STACK_BEGIN;
     _task->registers.ss = USER_DATA_SELECTOR;
+    _task->registers.cs = USER_CODE_SELECTOR;
     _task->process = _process;
 
     return SUCCESS;
@@ -71,6 +73,7 @@ void switch_current_page_directory_to_current_task_pd(){
     task_switch(cur_task);
 }
 
+/**==========================================================================*/
 void gammaos_first_ever_task(){
     if(!cur_task){
         kpanic("gammaos_first_ever_task: first task not provided!\n");
@@ -80,6 +83,9 @@ void gammaos_first_ever_task(){
     enter_task(&cur_task->registers);
 
 }
+
+/**==========================================================================*/
+
 
 
 struct task* current_task(){

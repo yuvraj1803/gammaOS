@@ -3,13 +3,13 @@ INCLUDES = -I./kernel
 FLAGS = -g -ffreestanding -falign-jumps -falign-functions -falign-labels -falign-loops -fstrength-reduce -fomit-frame-pointer -finline-functions -Wno-unused-function -fno-builtin -Werror -Wno-unused-label -Wno-cpp -Wno-unused-parameter -Wno-unused-variable -Wno-unused-value  -nostdlib -nostartfiles -nodefaultlibs -Wall -O0 -Iinc
 
 
-all: ./bin/boot.bin ./bin/kernel.bin
+all: ./bin/boot.bin ./bin/kernel.bin make_programs
 	rm -rf ./bin/os.bin
 	dd if=./bin/boot.bin >> ./bin/os.bin
 	dd if=./bin/kernel.bin >> ./bin/os.bin
 	dd if=/dev/zero bs=1048576 count=16 >> ./bin/os.bin
 	sudo mount -t vfat ./bin/os.bin /mnt/d
-	sudo cp ./test.txt /mnt/d
+	sudo cp ./programs/yuvr/yuvr.bin /mnt/d
 
 	sudo umount /mnt/d
 
@@ -95,6 +95,11 @@ all: ./bin/boot.bin ./bin/kernel.bin
 ./build/task/task.s.o: ./kernel/task/task.s
 	nasm -f elf -g ./kernel/task/task.s -o ./build/task/task.s.o
 
+make_programs:
+	cd ./programs/yuvr && $(MAKE) all
+
+clean_programs:
+	cd ./programs/yuvr && $(MAKE) clean
 
 clean:
 	rm -rf ./bin/boot.bin	
