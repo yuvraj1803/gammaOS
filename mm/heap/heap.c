@@ -81,10 +81,14 @@ void* malloc_blocks(struct heap* _heap, uint32_t blocks_to_allocate){
 // deallocate memory starting at some block '_block'
 void free_blocks(struct heap* _heap, uint32_t start_block){
 
-        while(_heap->entry_table->entries[start_block] != HEAP_BLOCK_ENTRY_TAKEN){
-            _heap->entry_table->entries[start_block] = HEAP_BLOCK_ENTRY_FREE;
-            start_block++;
+
+        for(uint32_t block = start_block; block < _heap->entry_table->num_entries; block++){
+            if(!(_heap->entry_table->entries[block] & HEAP_BLOCK_HAS_NEXT)) break;
+
+            _heap->entry_table->entries[block] = HEAP_BLOCK_ENTRY_FREE;
+
         }
+
 
 }
 
@@ -128,9 +132,9 @@ uint32_t find_free_entry(struct heap* _heap, uint32_t blocks_to_allocate){
 
         if(block_start == -1){ // if this is the first block we found
             block_start = current_block;
-        }else{
-            block_count++;
         }
+
+        block_count++;
 
         if(block_count == blocks_to_allocate){
             return block_start;
