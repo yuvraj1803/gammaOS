@@ -9,20 +9,20 @@ enter_task:
 
     mov ebx, [ebp+4]
 
-    push dword [ebx+44] ; ss
+    push dword [ebx+40] ; ss
     
-    push dword [ebx+40] ; esp
+    push dword [ebx+24] ; esp
 
     pushf ; flags
     pop eax
     or eax, 0x200
     push eax
 
-    push dword [ebx+32] ; cs
+    push dword [ebx+36] ; cs
 
-    push dword [ebx+28] ; ip
+    push dword [ebx+32] ; ip
 
-    mov ax, [ebx+44] ; ss
+    mov ax, [ebx+40] ; ss
     mov ds, ax
     mov es, ax
     mov fs, ax
@@ -49,12 +49,11 @@ restore_gprs:
     mov esi, [eax+16]
     mov edi, [eax+20]
 
-    mov esp, [eax+24]
     mov ebp, [eax+28]
  
     mov eax, [eax] ;; finally restoring eax
 
-    pop ebp
+    add esp, 4
 
     ret
 

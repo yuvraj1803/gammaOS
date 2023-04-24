@@ -93,6 +93,8 @@ void kinit(){
     
     gammaos_first_ever_task();
 
+    while(1){}
+
     // int fd = fopen("A:/yuvr.bin",'r');
     // char buf[100];
     // fread((uint8_t*)buf,100,1,fd);
