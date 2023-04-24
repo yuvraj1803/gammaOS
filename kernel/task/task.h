@@ -10,6 +10,8 @@
 #include "../../config.h"
 #include "../../mm/paging/paging.h"
 #include "process/process.h"
+#include "../idt/idt.h"
+
 
 
 struct reg{
@@ -32,6 +34,7 @@ struct reg{
 
 };
 struct process;
+struct interrupt_frame;
 struct task{
     struct vaddr_space* task_space; // task virtual address space structure.
     struct reg registers; // task processor state.
@@ -50,6 +53,8 @@ int8_t          close_task(struct task* _task);
 void enter_task(struct reg* registers);
 void restore_gprs(struct reg* registers);
 void set_all_segments_to_user_data_segment();
+void change_to_current_task_page_directory();
+void current_task_save_state();
 
 
 void gammaos_first_ever_task();

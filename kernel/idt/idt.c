@@ -8,6 +8,8 @@
 #include "../../mm/memory.h"
 #include "../kernel.h"
 #include "../io/io.h"
+#include "../task/task.h"
+#include "__0x80/__0x80.h"
 
 #define _32BIT_INTERRUPT_GATE   0xE
 #define _32BIT_TRAP_GATE        0xF
@@ -24,6 +26,9 @@ struct idtr_desc idtr_descriptor; // Interrupt descriptor table register
 
 extern void idt_load(void * idtr);
 extern void no_inth();
+extern void isr_0x80();
+
+void* isr_0x80_handler(int command, struct interrupt_frame* iframe);
 
 // no int handler is mapped to no_inth, called when an interrupt has not been defined yet. 
 // this is done to avoid resetting the processor accidentally.
@@ -50,9 +55,22 @@ void idt_init(){
         idt_set(_intr, no_inth);
     }
 
+    idt_set(0x80, isr_0x80);
 
     // tell processor where idt is. check idt.s
     idt_load(&idtr_descriptor);
 
 
+}
+
+void* isr_0x80_handler(int command, struct interrupt_frame* iframe){
+    change_to_kernel_page_directory();
+
+    current_task_save_state();
+
+    void* _ret = __0x80_command_handler(command, iframe);
+
+    change_to_current_task_page_directory();
+
+    return _ret;
 }

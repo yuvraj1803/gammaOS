@@ -20,6 +20,7 @@
 #define KERNEL_HB_SIZE                      4096      // --> Heap Block size (in bytes)
 #define KERNEL_HEAP_BASE                    0x01000000
 #define KERNEL_HEAP_TABLE_BASE              0x00007E00
+#define KERNEL_MAX_0x80_FUNCTIONS           256
 
 #define MAX_NUMBER_OF_DISKS                 26
 #define PRIMARY_DISK                        'A'

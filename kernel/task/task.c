@@ -9,6 +9,7 @@
 #include "../../drivers/display/vga/vga.h"
 #include "../config.h"
 #include "../../mm/heap/kheap.h"
+#include "../idt/idt.h"
 
 struct task* cur_task;       // pointer to currently running task
 struct task* task_list_head; // pointer to head of linked list of tasks
@@ -68,6 +69,10 @@ void task_switch(struct task* _task){
     load_page_directory(_task->task_space->pd);
 }
 
+void change_to_current_task_page_directory(){
+    load_page_directory(cur_task->task_space->pd);
+}
+
 void switch_current_page_directory_to_current_task_pd(){
     set_all_segments_to_user_data_segment();
     task_switch(cur_task);
@@ -86,6 +91,29 @@ void gammaos_first_ever_task(){
 
 /**==========================================================================*/
 
+void current_task_save_state(struct interrupt_frame* iframe){
+
+    if(!cur_task){
+        kpanic("No task running!\n");
+    }
+
+    // save processor state 
+
+    cur_task->registers.cs = iframe->cs;
+    cur_task->registers.ss = iframe->ss;
+    cur_task->registers.eax = iframe->eax;
+    cur_task->registers.ebx = iframe->ebx;
+    cur_task->registers.ecx = iframe->ecx;
+    cur_task->registers.edx = iframe->edx;
+    cur_task->registers.esi = iframe->esi;
+    cur_task->registers.edi = iframe->edi;
+    cur_task->registers.esp = iframe->esp;
+    cur_task->registers.ip = iframe->ip;
+    cur_task->registers.flags = iframe->flags;
+    cur_task->registers.ebp = iframe->ebp;
+        
+
+}
 
 
 struct task* current_task(){

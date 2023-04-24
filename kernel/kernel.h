@@ -12,5 +12,9 @@
 void init();
 uint32_t kprintf(const char * str);
 void kpanic(const char* str);
+void set_all_segments_to_user_data_segment();
+void set_all_segments_to_kernel_data_segment();
+void change_to_kernel_page_directory();
+
 
 #endif

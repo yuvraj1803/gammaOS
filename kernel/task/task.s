@@ -32,7 +32,7 @@ enter_task:
     call restore_gprs
     add esp, 4
 
-    iretd
+    iret
 
 
 restore_gprs:

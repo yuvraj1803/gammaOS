@@ -22,6 +22,7 @@
 #include "kstatus.h"
 #include "task/process/process.h"
 #include "task/task.h"
+#include "idt/__0x80/__0x80.h"
 
 struct vaddr_space* kernel_space;
 struct tss _tss;
@@ -35,6 +36,11 @@ struct gdt_structured _gdt_s[GDT_ENTRIES] = {
     {.base = (uint32_t)&_tss, .limit=sizeof(struct tss), .attrubutes=0xe9} // tss
     
 };
+
+void change_to_kernel_page_directory(){
+    set_all_segments_to_kernel_data_segment();
+    load_page_directory(kernel_space->pd);
+}
 
 
 void kinit(){
@@ -60,6 +66,7 @@ void kinit(){
 
     kclear_display(); // clear the screen
     idt_init(); // initialise interrupt descriptor table
+    __0x80_init(); // initialise 0x80 interrupt handler
 
     kheap_init(); // initialise kernel heap section
 
