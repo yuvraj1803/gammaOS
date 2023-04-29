@@ -5,6 +5,5 @@ section .asm
 global _start
 
 _start:
-
-label:
-    jmp label
+    int 0x80
+    jmp $

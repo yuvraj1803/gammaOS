@@ -36,12 +36,12 @@ void no_int_handler(){
     outb(0x20,0x20);
 }
 
-void idt_set(int interrupt_no, void * int_address){
+void idt_set(int interrupt_no, void* int_address){
     struct idt_desc* desc = &idt_descriptors[interrupt_no];
     desc->offset1 = (uint32_t) int_address & 0x0000FFFF; // low 16 bits of address
     desc->selector = KERNEL_CODE_SELECTOR;  
     desc->type_attr = (IDT_PRESENT * 0x8 + IDT_RING*0x2)*0x10 | IDT_GATE;
-    desc->offset2 = (uint32_t) int_address >> (1 << 4); // high 16 bits of address
+    desc->offset2 = (uint32_t) int_address & 0xFFFF0000; // high 16 bits of address
 }
 
 
@@ -64,13 +64,13 @@ void idt_init(){
 }
 
 void* isr_0x80_handler(int command, struct interrupt_frame* iframe){
-    change_to_kernel_page_directory();
+    change_to_kernel_page_directory(); // switch to kernel virtual address space
 
     current_task_save_state();
 
     void* _ret = __0x80_command_handler(command, iframe);
 
-    change_to_current_task_page_directory();
+    change_to_current_task_page_directory(); // come back to process virtual address space
 
     return _ret;
 }

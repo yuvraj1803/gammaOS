@@ -14,7 +14,7 @@ void * memset(void * base_addr, int init_val, size_t size){
         __base_addr[i] = (char)init_val;
     }
 
-    return base_addr;
+    return (void*)__base_addr;
 }
 
 

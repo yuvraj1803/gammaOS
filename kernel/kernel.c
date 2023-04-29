@@ -66,7 +66,7 @@ void kinit(){
 
     kclear_display(); // clear the screen
     idt_init(); // initialise interrupt descriptor table
-    __0x80_init(); // initialise 0x80 interrupt handler
+    __0x80_init(); // initialise 0x80 int
 
     kheap_init(); // initialise kernel heap section
 
@@ -97,8 +97,10 @@ void kinit(){
     if(!p){
         kpanic("process not created!!:(\n");
     }
-    
+        kprint_int(55);
+
     gammaos_first_ever_task();
+
 
     while(1){}
 
