@@ -91,6 +91,7 @@ void kinit(){
     __enable_irq(); // enable interrupts
 
 
+
     struct process* p = 0;
     p = process_new("A:/yuvr.bin");
 

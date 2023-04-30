@@ -24,7 +24,7 @@
 struct idt_desc idt_descriptors[TOTAL_INTERRUPTS]; // Interrupt descriptor table
 struct idtr_desc idtr_descriptor; // Interrupt descriptor table register
 
-extern void idt_load(void * idtr);
+extern void idt_load(struct idtr_desc * idtr);
 extern void no_inth();
 extern void isr_0x80();
 
@@ -41,7 +41,7 @@ void idt_set(int interrupt_no, void* int_address){
     desc->offset1 = (uint32_t) int_address & 0x0000FFFF; // low 16 bits of address
     desc->selector = KERNEL_CODE_SELECTOR;  
     desc->type_attr = (IDT_PRESENT * 0x8 + IDT_RING*0x2)*0x10 | IDT_GATE;
-    desc->offset2 = (uint32_t) int_address & 0xFFFF0000; // high 16 bits of address
+    desc->offset2 = (uint32_t) int_address >> 16; // high 16 bits of address
 }
 
 
