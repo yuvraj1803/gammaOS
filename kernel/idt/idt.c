@@ -66,7 +66,7 @@ void idt_init(){
 void* isr_0x80_handler(int command, struct interrupt_frame* iframe){
     change_to_kernel_page_directory(); // switch to kernel virtual address space
 
-    current_task_save_state();
+    current_task_save_state(iframe);
 
     void* _ret = __0x80_command_handler(command, iframe);
 

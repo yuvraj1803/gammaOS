@@ -3,12 +3,20 @@
 #include "../../../mm/memory.h"
 #include "../../kstatus.h"
 #include "../../kernel.h"
+#include "io/io.h"
+
+
 typedef void*(*__0x80_command_function)(struct interrupt_frame* iframe);
 
 __0x80_command_function __0x80_functions[KERNEL_MAX_0x80_FUNCTIONS];
 
+int8_t __0x80_add_function(int command, __0x80_command_function function);
+
 void  __0x80_init(){
     memset(__0x80_functions, 0, sizeof(__0x80_functions));
+
+    __0x80_add_function(__NR_0_PRINT, __0x80_PRINT);
+    
 }
 
 int8_t __0x80_add_function(int command, __0x80_command_function function){

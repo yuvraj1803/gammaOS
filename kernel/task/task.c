@@ -68,7 +68,11 @@ static int8_t init_task(struct task* _task, struct process* _process){
 
 void task_switch(struct task* _task){
     cur_task = _task;
-    set_all_segments_to_user_data_segment();
+
+    /*
+    Note: we are merely switching the the task address space. The data selectors are still of the kernel's
+    */
+    
     load_page_directory(_task->task_space->pd);
 }
 
