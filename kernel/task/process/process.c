@@ -20,6 +20,11 @@ static struct process* process_list[PROCESS_MAX_PROCESSES];
 
 uint8_t processes_initialised = 0;
 
+
+struct process* process_current(){
+    return current_process;
+}
+
 static void process_init(){
     memset(process_list, 0, sizeof(process_list));
 }

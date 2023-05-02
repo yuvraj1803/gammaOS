@@ -109,6 +109,10 @@ all: ./bin/boot.bin ./bin/kernel.bin make_programs
 ./build/idt/__0x80/io/io.o: ./kernel/idt/__0x80/io/io.c
 	i686-elf-gcc $(INCLUDES) -I./kernel/idt/__0x80/io $(FLAGS) -std=gnu99 -c ./kernel/idt/__0x80/io/io.c -o ./build/idt/__0x80/io/io.o
 	
+./build/drivers/keyboard/keyboard.o: ./drivers/keyboard/keyboard.c
+	i686-elf-gcc $(INCLUDES) -I./drivers/keyboard $(FLAGS) -std=gnu99 -c ./drivers/keyboard/keyboard.c -o ./build/drivers/keyboard/keyboard.o 
+
+
 
 make_programs:
 	cd ./programs/yuvr && $(MAKE) all

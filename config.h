@@ -39,6 +39,7 @@
 #define PROCESS_MAX_PROCESSES               16
 #define PROCESS_MAX_PROCESS_MEM_ALLOCATIONS 1024
 #define PROCESS_MAX_PROCESS_STACK_SIZE      65536
+#define PROCESS_MAX_KEYBOARD_BUFFER_SIZE    1024
 
 #define VGA                     
 #endif

@@ -12,6 +12,7 @@
 
 struct process* process_get(uint16_t pid);
 struct process* process_new(const char* filename);  
+struct process* process_current();
 
 enum{
     PROCESS_ELF_FILE,
@@ -34,6 +35,14 @@ struct process{
     uint32_t size; // size of memory pointed by "physical_address"
 
     uint8_t file_type;
+
+    // keyboard buffer for the process
+
+    struct keyboard_buffer{
+        char buffer[PROCESS_MAX_KEYBOARD_BUFFER_SIZE];
+        int head;
+        int tail;
+    } keyboard_buf;
 
 };
 
