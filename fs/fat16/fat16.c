@@ -347,13 +347,17 @@ static struct fat16_directory* fat16_load_directory(struct disk* _disk, struct f
     struct fat16_directory* dir = kzalloc(sizeof(struct fat16_directory));
     struct fat16_private_data* private = _disk->fs_private_data;
 
-    if(file->attributes & FAT16_FILE_SUBDIRECTORY){
-        return -0;
-    }
+
 
     if(!dir){
         return 0;
     }
+
+    if(file->attributes & FAT16_FILE_SUBDIRECTORY){
+        kfree(dir);
+        return -0;
+    }
+
     // first cluster and sectors of the directory entries.
     uint32_t first_cluster = file->low_16_bits_of_first_cluster | file->high_16_bits_of_first_cluster;
     uint32_t first_sector  = private->root.last_sector + (first_cluster - 2) * private->header.bpb.sectors_per_cluster;
@@ -371,6 +375,7 @@ static struct fat16_directory* fat16_load_directory(struct disk* _disk, struct f
     }
 
     if(fat16_read_from_disk(_disk, first_cluster, 0, directory_size, dir->files) < 0){
+        kfree(dir->files);
         return 0;
     }
 
@@ -382,11 +387,14 @@ static struct fat16_directory* fat16_load_directory(struct disk* _disk, struct f
 static struct fat16_file* fat16_clone_file(struct fat16_file* file, uint32_t size){
     struct fat16_file* file_copy = kzalloc(sizeof(struct fat16_file));
 
-    if(size < sizeof(struct fat16_file)){
+
+    if(!file_copy){
         return 0;
     }
 
-    if(!file_copy){
+
+    if(size < sizeof(struct fat16_file)){
+        kfree(file_copy);
         return 0;
     }
 
@@ -401,11 +409,14 @@ static struct fat16_unit* fat16_new_fat_unit_for_directory_unit(struct disk* _di
         return 0;
     }
 
+    // if the item passed is a directory
     if(file->attributes & FAT16_FILE_SUBDIRECTORY){
         unit->directory = fat16_load_directory(_disk, file);
         unit->fat16_unit_type = FAT16_DIRECTORY;
         return unit;
     }
+
+    // if the item passed is a file
 
     unit->file = fat16_clone_file(file, sizeof(struct fat16_file));
     unit->fat16_unit_type = FAT16_FILE;
@@ -522,6 +533,7 @@ void* fat16_open(struct disk* _disk, struct path* _path, uint8_t mode){
     fd->unit = fat16_get_unit(_disk, _path->units);
 
     if(!fd->unit){
+        kfree(fd);
         return 0;
     }
 

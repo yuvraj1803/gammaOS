@@ -6,7 +6,6 @@ FILES = ./build/kernel.s.o ./build/kernel.o ./build/idt/idt.s.o \
 ./build/task/tss/tss.s.o ./build/task/task.o ./build/fs/fat16/fat16.o ./build/fs/vfs/vfs.o \
 ./build/fs/file.o ./build/task/process/process.o ./build/task/task.s.o ./build/idt/__0x80/__0x80.o \
  ./build/idt/__0x80/io/io.o
- 
 INCLUDES = -I./kernel
 FLAGS = -g -ffreestanding -falign-jumps -falign-functions -falign-labels -falign-loops -fstrength-reduce -fomit-frame-pointer -finline-functions -Wno-unused-function -fno-builtin -Werror -Wno-unused-label -Wno-cpp -Wno-unused-parameter -Wno-unused-variable -Wno-unused-value  -nostdlib -nostartfiles -nodefaultlibs -Wall -O0 -Iinc
 

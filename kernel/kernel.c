@@ -98,7 +98,6 @@ void kinit(){
     if(!p){
         kpanic("process not created!!:(\n");
     }
-        kprint_int(55);
 
     gammaos_first_ever_task();
 

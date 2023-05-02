@@ -12,4 +12,4 @@ _start:
     jmp $
 
 section .data
-msg: db 'Hi this is yuvr',0
+msg: db 'This is being printed from userland!',0
