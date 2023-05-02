@@ -15,8 +15,9 @@ all: ./bin/boot.bin ./bin/kernel.bin make_programs
 	dd if=./bin/boot.bin >> ./bin/os.bin
 	dd if=./bin/kernel.bin >> ./bin/os.bin
 	dd if=/dev/zero bs=1048576 count=16 >> ./bin/os.bin
+
 	sudo mount -t vfat ./bin/os.bin /mnt/d
-	sudo cp ./programs/yuvr/yuvr.bin /mnt/d
+	sudo cp -r ./programs /mnt/d
 
 	sudo umount /mnt/d
 

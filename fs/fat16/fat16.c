@@ -362,14 +362,14 @@ static struct fat16_directory* fat16_load_directory(struct disk* _disk, struct f
         return 0;
     }
 
-    if(file->attributes & FAT16_FILE_SUBDIRECTORY){
+    if(!(file->attributes & FAT16_FILE_SUBDIRECTORY)){
         kfree(dir);
         return -0;
     }
 
     // first cluster and sectors of the directory entries.
     uint32_t first_cluster = file->low_16_bits_of_first_cluster | file->high_16_bits_of_first_cluster;
-    uint32_t first_sector  = private->root.last_sector + (first_cluster - 2) * private->header.bpb.sectors_per_cluster;
+    uint32_t first_sector  = private->root.last_sector + (first_cluster - 2) * private->header.bpb.sectors_per_cluster +1;
     
     dir->first_sector = first_sector;
 

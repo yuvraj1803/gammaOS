@@ -93,7 +93,7 @@ void kinit(){
 
 
     struct process* p = 0;
-    p = process_new("A:/yuvr.bin");
+    p = process_new("A:/programs/yuvr/yuvr.bin");
 
     if(!p){
         kpanic("process not created!!:(\n");
