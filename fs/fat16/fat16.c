@@ -316,12 +316,21 @@ static int fat16_read_from_disk(struct disk* _disk, uint32_t first_cluster, uint
 
 }
 
-static void fat16_to_proper_string(char ** out, const char* in){
+static void fat16_to_proper_string(char ** out, const char* in, uint32_t size){
+
+    int counter = 0;
 
     while(*in != 0x00 && *in != 0x20){
         **out = *in;
         *out+=1;
         in+=1;
+        counter++;
+
+        if(counter >= size){
+            **out = 0x00;
+            return;
+        }
+
     }
 
     if(*in == 0x20){
@@ -334,11 +343,11 @@ static void fat16_get_full_relative_name(struct fat16_file* file, char* out, uin
     memset(out, 0, length);
     char* temp_out = out;
 
-    fat16_to_proper_string(&temp_out, (const char*) file->name);
+    fat16_to_proper_string(&temp_out, (const char*) file->name, sizeof(file->name));
 
     if(file->extention[0] != 0x00 && file->extention[0] != 0x20){
         *temp_out++ = '.';
-        fat16_to_proper_string(&temp_out, (const char*) file->extention);
+        fat16_to_proper_string(&temp_out, (const char*) file->extention, sizeof(file->extention));
     }
 }
 
