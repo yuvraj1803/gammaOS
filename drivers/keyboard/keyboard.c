@@ -1,15 +1,12 @@
 #include "keyboard.h"
 #include "../../kernel/kstatus.h"
 #include "../../kernel/task/process/process.h"
+#include "ps2/ps2.h"
 
 
 static struct keyboard* keyboard_list_head = 0;
 static struct keyboard* keyboard_list_tail = 0;
 
-
-void keyboard_init(){
-
-}
 
 int keyboard_add(struct keyboard* _keyboard){
 
@@ -29,6 +26,10 @@ int keyboard_add(struct keyboard* _keyboard){
 
 }
 
+void keyboard_init(){
+    keyboard_add(ps2_init());
+}
+
 static void keyboard_pop_from_buffer(struct process* _process){
 
     _process->keyboard_buf.tail--;
@@ -46,7 +47,7 @@ static void keyboard_push_to_buffer(struct process* _process, char ch){
 void keyboard_put(char ch){
     if(!process_current()) return;
 
-    keyboard_push_to_buffer(process_current, ch);
+    keyboard_push_to_buffer(process_current(), ch);
 
 }
 

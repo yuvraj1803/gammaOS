@@ -10,6 +10,7 @@
 #include "../io/io.h"
 #include "../task/task.h"
 #include "__0x80/__0x80.h"
+#include "../../drivers/keyboard/ps2/ps2.h"
 
 #define _32BIT_INTERRUPT_GATE   0xE
 #define _32BIT_TRAP_GATE        0xF
@@ -56,6 +57,7 @@ void idt_init(){
     }
 
     idt_set(0x80, isr_0x80);
+    idt_set(0x21, ps2_interrupt_handler);
 
     // tell processor where idt is. check idt.s
     idt_load(&idtr_descriptor);

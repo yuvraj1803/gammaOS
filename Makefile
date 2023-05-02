@@ -5,7 +5,7 @@ FILES = ./build/kernel.s.o ./build/kernel.o ./build/idt/idt.s.o \
 ./build/string/string.o ./build/debug/debug.o ./build/gdt/gdt.o ./build/gdt/gdt.s.o \
 ./build/task/tss/tss.s.o ./build/task/task.o ./build/fs/fat16/fat16.o ./build/fs/vfs/vfs.o \
 ./build/fs/file.o ./build/task/process/process.o ./build/task/task.s.o ./build/idt/__0x80/__0x80.o \
- ./build/idt/__0x80/io/io.o
+ ./build/idt/__0x80/io/io.o ./build/drivers/keyboard/keyboard.o ./build/drivers/keyboard/ps2/ps2.o
 INCLUDES = -I./kernel
 FLAGS = -g -ffreestanding -falign-jumps -falign-functions -falign-labels -falign-loops -fstrength-reduce -fomit-frame-pointer -finline-functions -Wno-unused-function -fno-builtin -Werror -Wno-unused-label -Wno-cpp -Wno-unused-parameter -Wno-unused-variable -Wno-unused-value  -nostdlib -nostartfiles -nodefaultlibs -Wall -O0 -Iinc
 
@@ -112,6 +112,8 @@ all: ./bin/boot.bin ./bin/kernel.bin make_programs
 ./build/drivers/keyboard/keyboard.o: ./drivers/keyboard/keyboard.c
 	i686-elf-gcc $(INCLUDES) -I./drivers/keyboard $(FLAGS) -std=gnu99 -c ./drivers/keyboard/keyboard.c -o ./build/drivers/keyboard/keyboard.o 
 
+./build/drivers/keyboard/ps2/ps2.o: ./drivers/keyboard/ps2/ps2.c
+	i686-elf-gcc $(INCLUDES) -I./drivers/keyboard/ps2 $(FLAGS) -std=gnu99 -c ./drivers/keyboard/ps2/ps2.c -o ./build/drivers/keyboard/ps2/ps2.o 
 
 
 make_programs:
