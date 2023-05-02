@@ -28,7 +28,7 @@ struct process{
 
     void* mem_allocations[PROCESS_MAX_PROCESS_MEM_ALLOCATIONS]; // all dynamic memory allocations done by the process
 
-    void* physical_address; // pointer to process memory
+    void *physical_address; // pointer to process memory
     void* stack; // pointer to process stack
 
     uint32_t size; // size of memory pointed by "physical_address"

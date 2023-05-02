@@ -10,6 +10,8 @@
 #include "../config.h"
 #include "../../mm/heap/kheap.h"
 #include "../idt/idt.h"
+#include "../../mm/paging/paging.h"
+#include "../../string/string.h"
 
 struct task* cur_task;       // pointer to currently running task
 struct task* task_list_head; // pointer to head of linked list of tasks
@@ -66,11 +68,18 @@ static int8_t init_task(struct task* _task, struct process* _process){
 
 void task_switch(struct task* _task){
     cur_task = _task;
+    set_all_segments_to_user_data_segment();
     load_page_directory(_task->task_space->pd);
 }
 
 void change_to_current_task_page_directory(){
+    set_all_segments_to_user_data_segment();
     load_page_directory(cur_task->task_space->pd);
+}
+
+void change_to_given_task_page_directory(struct task* _task){
+    set_all_segments_to_user_data_segment();
+    load_page_directory(_task->task_space->pd);
 }
 
 void switch_current_page_directory_to_current_task_pd(){
@@ -141,4 +150,61 @@ int8_t close_task(struct task* _task){
     kfree(_task);
 
     return SUCCESS;
+}
+
+
+/*
+    Given some task and its address space, this function can move the data from the process' address space
+    to the kernel address space.
+*/
+int copy_data_from_task_to_kernel(struct task* _task, void* addr_in_task, void* addr_in_kern, uint32_t size){
+
+    if(size > PAGE_SIZE){
+        return -ERR_INVARG;
+    }
+
+    uint8_t* shared_mem_base = (uint8_t*) kzalloc(size);
+
+    if(!shared_mem_base){
+        return -ERR_MALLOC_FAIL;
+    }
+
+    uint32_t old_pt_entry = paging_virt_to_phy(_task->task_space, shared_mem_base);
+
+    // map virtual address of shared mem in task
+    // address space directly to physical memory
+    // this is done because, we want the kernel and the task
+    // to see the same memory
+    map_vaddr_to_val(_task->task_space->pd, shared_mem_base, (uint32_t) shared_mem_base | PAGE_PRESENT | PAGE_WRITE_ACCESS | PAGE_USER_ACCESS);
+    load_page_directory(_task->task_space->pd);
+    strncpy((char*)shared_mem_base, (char*)addr_in_task, size);
+
+    change_to_kernel_page_directory();
+
+    // change the shared mem base to wherever it pointed before
+    map_vaddr_to_val(_task->task_space->pd, shared_mem_base, old_pt_entry);
+
+    int bytes_written = strncpy((char*)addr_in_kern, (char*)shared_mem_base, size);
+
+    kfree(shared_mem_base);
+
+    return bytes_written;
+    
+
+} 
+
+/*access an element from task's stack*/
+void* task_access_stack(struct task* _task, int stack_index){
+
+    uint32_t* task_esp = (uint32_t*) _task->registers.esp;
+
+    change_to_given_task_page_directory(_task);
+
+    void* stack_elem = (void*) task_esp[stack_index];
+
+    change_to_kernel_page_directory();
+
+    return stack_elem;
+
+
 }

@@ -110,8 +110,8 @@ static int8_t process_map_memory(struct process* _process){
     }
 
     // we will map stack in the reverse order because we are using a full descending stack. ie, it grows downwards
-    // int8_t process_map_stack_res = paging_map_range(_process->task->task_space,_process->stack, (void*)paging_align_to_page((uint32_t)_process->stack - TASK_STACK_SIZE), (void*) TASK_DEFAULT_STACK_BEGIN , PAGE_PRESENT | PAGE_USER_ACCESS | PAGE_WRITE_ACCESS);
-    // if(process_map_stack_res < 0) return process_map_stack_res;
+    int8_t process_map_stack_res = paging_map_range(_process->task->task_space, (void*)TASK_DEFAULT_STACK_END,_process->stack, (void*)paging_align_to_page((uint32_t) _process->stack + TASK_STACK_SIZE),  PAGE_PRESENT | PAGE_USER_ACCESS | PAGE_WRITE_ACCESS);
+    if(process_map_stack_res < 0) return process_map_stack_res;
 
     return SUCCESS; 
 

@@ -50,3 +50,18 @@ int strncmp(const char* s1, const char* s2, uint32_t n){
 
     return 0;
 }
+
+int strncpy(char* tgt, char* src, uint32_t len){
+    int written = 0;
+
+    int tgt_ix = 0;
+    int src_ix = 0;
+
+    for(written = 0;written < len;written++){
+        if(src[src_ix] == 0x00) break;
+        tgt[tgt_ix] = src[src_ix];
+    }
+
+    return written;
+
+}

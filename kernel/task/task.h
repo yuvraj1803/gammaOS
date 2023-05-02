@@ -55,6 +55,7 @@ void restore_gprs(struct reg* registers);
 void set_all_segments_to_user_data_segment();
 void change_to_current_task_page_directory();
 void current_task_save_state();
+int copy_data_from_task_to_kernel(struct task* _task, void* addr_in_task, void* addr_in_kern, uint32_t size);
 
 
 void gammaos_first_ever_task();

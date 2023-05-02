@@ -151,3 +151,16 @@ void destroy_virtual_address_space(struct vaddr_space* _space){
     kfree(_space);
 
 }
+
+uint32_t paging_virt_to_phy(struct vaddr_space* _vspace, void* vaddr){
+    uint32_t pd_index;
+    uint32_t pt_index;
+
+    get_page_indices(vaddr,&pd_index,&pt_index);
+
+    uint32_t pt_entry = _vspace->pd->page_directory_entries[pd_index];
+    uint32_t* pt = (uint32_t*) (pt_entry & 0xfffff000);
+
+    return pt[pt_index];
+
+}

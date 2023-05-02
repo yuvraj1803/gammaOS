@@ -8,6 +8,7 @@
 #define __PAGING_H__
 
 #include <stdint.h>
+#include "../../kernel/kernel.h"
 
 #define PAGE_PRESENT        0b00000001  /*If page is actually at physical memory at that time*/
 #define PAGE_WRITE_ACCESS   0b00000010  /*If page can be written to*/
@@ -40,5 +41,7 @@ void destroy_virtual_address_space(struct vaddr_space* _space);
 int8_t map_vaddr_to_val(struct page_directory* pd, void* vaddr, uint32_t val);
 int8_t paging_map_range(struct vaddr_space* _vspace, void* vaddr, void* paddr, void* endaddr, int flags);
 uint32_t paging_align_to_page(uint32_t address);
+void change_to_kernel_page_directory();
+uint32_t paging_virt_to_phy(struct vaddr_space* _vspace, void* vaddr);
 
 #endif
