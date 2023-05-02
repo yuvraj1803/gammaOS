@@ -60,6 +60,8 @@ int strncpy(char* tgt, char* src, uint32_t len){
     for(written = 0;written < len;written++){
         if(src[src_ix] == 0x00) break;
         tgt[tgt_ix] = src[src_ix];
+        tgt_ix++;
+        src_ix++;
     }
 
     return written;
