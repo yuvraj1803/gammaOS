@@ -3,10 +3,12 @@ section .asm
 
 extern no_int_handler
 extern isr_0x80_handler
+extern ps2_interrupt_handler    
 
 global idt_load
 global no_inth
 global isr_0x80
+global isr_0x21
 
 global __enable_irq
 global __disable_irq
@@ -32,6 +34,8 @@ idt_load:
     pop  ebp
     ret
 
+; no_inth is called when an interrupt whose handler has not be defined yet.
+; so basically, its a default interrupt handler
 no_inth:
 
     cli
@@ -43,6 +47,8 @@ no_inth:
     sti
     iret
 
+
+; isr_0x80 is pretty self-explanatory, its for the system call interrupts
 isr_0x80:
 
     pushad
@@ -59,6 +65,15 @@ isr_0x80:
 
     iret
 
+
+isr_0x21:
+    cli
+    pushad
+    call ps2_interrupt_handler
+    popad
+    sti
+
+    iret
 
 section .data
 

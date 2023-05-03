@@ -75,9 +75,14 @@ void ps2_interrupt_handler(){
 
     char input_char = ps2_scancode_to_char(scancode);
 
+    kprintf((const char*) &input_char);
+
     keyboard_put(input_char);
 
-    change_to_current_task_page_directory();
+
+    // if there is no task running, there will be a garbage value loaded into cr3.
+    // great way to break your computer.
+    if(current_task()) change_to_current_task_page_directory();
     
 
 }

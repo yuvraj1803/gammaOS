@@ -1,4 +1,4 @@
-FILES = ./build/kernel.s.o ./build/kernel.o ./build/idt/idt.s.o \
+FILES = ./build/kernel.s.o ./build/kernel.o ./build/idt/idt.S.o \
 ./build/idt/idt.o ./build/mm/memory.o ./build/io/io.s.o ./build/mm/heap/heap.o \
 ./build/mm/heap/kheap.o ./build/mm/paging/paging.s.o ./build/mm/paging/paging.o \
 ./build/drivers/disk/disk.o ./build/drivers/display/vga/vga.o ./build/fs/parser/parser.o \
@@ -34,8 +34,8 @@ all: ./bin/boot.bin ./bin/kernel.bin make_programs
 ./build/kernel.o: ./kernel/kernel.c
 	i686-elf-gcc $(INCLUDES) $(FLAGS) -std=gnu99 -c ./kernel/kernel.c -o ./build/kernel.o 
 
-./build/idt/idt.s.o: ./kernel/idt/idt.s
-	nasm -f elf -g ./kernel/idt/idt.s -o ./build/idt/idt.s.o
+./build/idt/idt.S.o: ./kernel/idt/idt.S
+	nasm -f elf -g ./kernel/idt/idt.S -o ./build/idt/idt.S.o
 	
 ./build/idt/idt.o: ./kernel/idt/idt.c
 	i686-elf-gcc $(INCLUDES) -I./kernel/idt $(FLAGS) -std=gnu99 -c ./kernel/idt/idt.c -o ./build/idt/idt.o 

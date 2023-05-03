@@ -10,7 +10,7 @@
 #include "../io/io.h"
 #include "../task/task.h"
 #include "__0x80/__0x80.h"
-#include "../../drivers/keyboard/ps2/ps2.h"
+#include "../../drivers/keyboard/keyboard.h"
 
 #define _32BIT_INTERRUPT_GATE   0xE
 #define _32BIT_TRAP_GATE        0xF
@@ -28,6 +28,7 @@ struct idtr_desc idtr_descriptor; // Interrupt descriptor table register
 extern void idt_load(struct idtr_desc * idtr);
 extern void no_inth();
 extern void isr_0x80();
+extern void isr_0x21();
 
 void* isr_0x80_handler(int command, struct interrupt_frame* iframe);
 
@@ -56,8 +57,8 @@ void idt_init(){
         idt_set(_intr, no_inth);
     }
 
-    idt_set(0x80, isr_0x80);
-    idt_set(0x21, ps2_interrupt_handler);
+    idt_set(0x80, isr_0x80); // for system calls 
+    idt_set(0x21, isr_0x21); // for keyboard
 
     // tell processor where idt is. check idt.s
     idt_load(&idtr_descriptor);

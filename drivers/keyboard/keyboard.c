@@ -27,7 +27,9 @@ int keyboard_add(struct keyboard* _keyboard){
 }
 
 void keyboard_init(){
+#if defined(PS2)
     keyboard_add(ps2_init());
+#endif
 }
 
 static void keyboard_pop_from_buffer(struct process* _process){

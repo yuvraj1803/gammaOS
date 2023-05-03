@@ -41,5 +41,7 @@
 #define PROCESS_MAX_PROCESS_STACK_SIZE      65536
 #define PROCESS_MAX_KEYBOARD_BUFFER_SIZE    1024
 
-#define VGA                     
+#define VGA           
+#define PS2    
+
 #endif
