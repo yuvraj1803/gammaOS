@@ -106,6 +106,10 @@ static int8_t process_map_binary(struct process* _process){
 
 }
 
+void process_switch(struct process* _process){
+    current_process = _process;
+}
+
 static int8_t process_map_memory(struct process* _process){
 
     // if file type is binary
@@ -173,6 +177,10 @@ struct process* process_new(const char* filename){
         return 0;
     }
     process_list[_process->pid] = _process;
+
+    if(!current_process){
+        current_process = _process;
+    }
 
 
     return _process;

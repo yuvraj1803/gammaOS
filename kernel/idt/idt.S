@@ -67,11 +67,10 @@ isr_0x80:
 
 
 isr_0x21:
-    cli
+
     pushad
     call ps2_interrupt_handler
     popad
-    sti
 
     iret
 
