@@ -6,6 +6,7 @@
 #include "../../../mm/paging/paging.h"
 #include "../../../kernel/kernel.h"
 #include "../../../kernel/task/task.h"
+#include "../../../kernel/idt/idt.h"
 
 //useful macros
 #define SIZEOF_ARRAY(arr) sizeof(arr)/sizeof(arr[0])
@@ -33,6 +34,7 @@ static uint8_t ps2_scancode_set1[] = {
 };
 
 int ps2_keyboard_init();
+void ps2_interrupt_handler();
 
 struct keyboard ps2 = {
     .name = "PS/2",
@@ -44,6 +46,8 @@ int ps2_keyboard_init(){
 
     // enable ps2 first port.
     outb(PS2_COMMAND_PORT, PS2_ENABLE_FIRST_PORT);
+
+    idt_add_isr_handler(0x21, ps2_interrupt_handler);
 
     return SUCCESS;
 }

@@ -4,6 +4,7 @@
 #include "../../kstatus.h"
 #include "../../kernel.h"
 #include "io/io.h"
+#include "../../task/task.h"
 
 typedef void *(*__0x80_command_function)(struct interrupt_frame *iframe);
 
@@ -19,6 +20,7 @@ void __0x80_init()
     __0x80_add_function(__NR_1_GETCH, __0x80_GETCH);
     __0x80_add_function(__NR_2_PUTCH, __0x80_PUTCH);
 }
+
 
 int8_t __0x80_add_function(int command, __0x80_command_function function)
 {

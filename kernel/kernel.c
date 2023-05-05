@@ -43,8 +43,10 @@ void change_to_kernel_page_directory(){
     load_page_directory(kernel_space->pd);
 }
 
-
 void kinit(){
+
+    __disable_irq();
+
 #if defined(VGA)
     vga_init();
 #endif
@@ -93,7 +95,6 @@ void kinit(){
 
 
 
-
     struct process* p = process_new("A:/programs/yuvr/yuvr.bin");
 
     if(!p){
@@ -102,7 +103,10 @@ void kinit(){
 
     __enable_irq(); // enable interrupts
 
+
+
     gammaos_first_ever_task();
+
 
 
     while(1){}

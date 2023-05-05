@@ -13,6 +13,12 @@ void idt_init();
 extern void __enable_irq();
 extern void __disable_irq();
 
+struct interrupt_frame; 
+
+typedef void (*isr_handler_function)(struct interrupt_frame* iframe);
+
+int idt_add_isr_handler(int interrupt_no, isr_handler_function handler);
+
 // interrupt descriptor table entry structure
 struct idt_desc{
     uint16_t offset1;
