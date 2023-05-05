@@ -17,6 +17,8 @@ uint16_t * VGA_BASE; // base address of vga text buffer
 uint8_t cursor_x, cursor_y; // current positions on the screen.
 
 
+void kbackspace();
+
 void vga_init(){
     VGA_BASE = (uint16_t*) VGA_TEXT_BUFFER;
     cursor_x = 0;
@@ -55,11 +57,6 @@ uint32_t kprintf(const char * str){
 
 }
 
-void kbackspace(){
-    // to be implemented soon
-
-}
-
 // prints char into the screen.
 void kputchar(char c){
 
@@ -76,6 +73,22 @@ void kputchar(char c){
         cursor_y++;
     }
 }
+
+
+void kbackspace(){
+
+    // nothing to backspace
+    if(cursor_x == 0 && cursor_y == 0){
+        return;
+    }
+
+    cursor_x = (cursor_x - 1)%VGA_WIDTH;
+    kputchar(' ');
+    cursor_x = (cursor_x - 1)%VGA_WIDTH;
+
+
+}
+
 
 void kprint_int(int num) {
   char buf[32];
