@@ -13,5 +13,5 @@ struct keyboard{
 void keyboard_init();
 void keyboard_backspace();
 void keyboard_put(char ch);
-
+char keyboard_get();
 #endif

@@ -32,14 +32,23 @@ void keyboard_init(){
 #endif
 }
 
-static void keyboard_pop_from_buffer(struct process* _process){
+static char keyboard_pop_from_buffer(struct process* _process){
 
-    _process->keyboard_buf.tail--;
-    _process->keyboard_buf.buffer[_process->keyboard_buf.tail % PROCESS_MAX_KEYBOARD_BUFFER_SIZE] = 0;
+
+    char ch = _process->keyboard_buf.buffer[_process->keyboard_buf.head % PROCESS_MAX_KEYBOARD_BUFFER_SIZE];
+
+    if(!ch) return 0;
+
+    _process->keyboard_buf.buffer[_process->keyboard_buf.head % PROCESS_MAX_KEYBOARD_BUFFER_SIZE] = 0;
+    _process->keyboard_buf.head++;
+
+    return ch;  
 
 }
 
 static void keyboard_push_to_buffer(struct process* _process, char ch){
+
+    if(!ch) return;
 
     uint32_t index_to_push = _process->keyboard_buf.tail % PROCESS_MAX_KEYBOARD_BUFFER_SIZE;
     _process->keyboard_buf.buffer[index_to_push] = ch;
@@ -51,6 +60,13 @@ void keyboard_put(char ch){
 
     keyboard_push_to_buffer(process_current(), ch);
 
+}
+
+char keyboard_get(){
+
+    if(!process_current()) return 0;
+
+    return keyboard_pop_from_buffer(process_current());
 }
 
 void keyboard_backspace(){

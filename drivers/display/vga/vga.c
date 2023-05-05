@@ -11,6 +11,8 @@
 #define VGA_WIDTH           80
 #define VGA_HEIGHT          80
 
+#define PS2_BACKSPACE       0x08
+
 uint16_t * VGA_BASE; // base address of vga text buffer
 uint8_t cursor_x, cursor_y; // current positions on the screen.
 
@@ -53,8 +55,19 @@ uint32_t kprintf(const char * str){
 
 }
 
+void kbackspace(){
+    // to be implemented soon
+
+}
+
 // prints char into the screen.
 void kputchar(char c){
+
+    if(c == PS2_BACKSPACE){
+        kbackspace();
+        return;
+    }
+
     VGA_BASE[cursor_y * VGA_WIDTH + cursor_x] = kmake_char(c, 0xf);
     cursor_x++;
 

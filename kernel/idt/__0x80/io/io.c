@@ -2,6 +2,8 @@
 #include "../../../kernel.h"
 #include "../../../kstatus.h"
 #include "../../../task/task.h"
+#include "../../../../drivers/keyboard/keyboard.h"
+#include "../../../../drivers/display/vga/vga.h"
 
 
 void* __0x80_PRINT(struct interrupt_frame* iframe){
@@ -16,4 +18,21 @@ void* __0x80_PRINT(struct interrupt_frame* iframe){
     kprintf(arg_in_kernel_space);
 
     return (void*) SUCCESS;
+}
+
+void* __0x80_GETCH(struct interrupt_frame* iframe){
+    void* ch = (void*)((int)keyboard_get());
+
+    return ch;
+
+}
+
+void* __0x80_PUTCH(struct interrupt_frame* iframe){
+
+    char ch = (char)(int)task_access_stack(current_task(), 0);
+
+    kputchar(ch);
+
+    return (void*) SUCCESS;
+
 }

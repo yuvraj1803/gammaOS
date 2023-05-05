@@ -7,6 +7,8 @@ typedef void*(*__0x80_command_function)(struct interrupt_frame* iframe);
 
 enum __0x80_COMMANDS{
     __NR_0_PRINT, 
+    __NR_1_GETCH,
+    __NR_2_PUTCH,
 };
 
 

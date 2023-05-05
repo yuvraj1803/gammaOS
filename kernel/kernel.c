@@ -23,6 +23,7 @@
 #include "task/process/process.h"
 #include "task/task.h"
 #include "idt/__0x80/__0x80.h"
+#include "../drivers/keyboard/keyboard.h"
 
 struct vaddr_space* kernel_space;
 struct tss _tss;
@@ -70,6 +71,8 @@ void kinit(){
 
     kheap_init(); // initialise kernel heap section
 
+    keyboard_init();// intialise the abstract keyboard driver
+
     /* creating kernel address space and loading its page directory into cr3*/
     kernel_space = create_virtual_address_space(PAGE_PRESENT | PAGE_USER_ACCESS | PAGE_WRITE_ACCESS);
     if(kernel_space == 0x0){
@@ -88,16 +91,16 @@ void kinit(){
 
     enable_paging(); // enable paging
 
-    __enable_irq(); // enable interrupts
 
 
 
-    struct process* p = 0;
-    p = process_new("A:/programs/yuvr/yuvr.bin");
+    struct process* p = process_new("A:/programs/yuvr/yuvr.bin");
 
     if(!p){
         kpanic("process not created!!:(\n");
     }
+
+    __enable_irq(); // enable interrupts
 
     gammaos_first_ever_task();
 

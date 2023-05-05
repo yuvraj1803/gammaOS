@@ -1,12 +1,12 @@
 section .asm
 
 
-extern no_int_handler
+extern general_execption_handler
 extern isr_0x80_handler
 extern ps2_interrupt_handler    
 
 global idt_load
-global no_inth
+global general_execption
 global isr_0x80
 global isr_0x21
 
@@ -36,12 +36,12 @@ idt_load:
 
 ; no_inth is called when an interrupt whose handler has not be defined yet.
 ; so basically, its a default interrupt handler
-no_inth:
+general_execption:
 
     cli
 
     pushad
-    call no_int_handler
+    call general_execption_handler
     popad
 
     sti
@@ -67,11 +67,10 @@ isr_0x80:
 
 
 isr_0x21:
-
     pushad
     call ps2_interrupt_handler
     popad
-
+    
     iret
 
 section .data

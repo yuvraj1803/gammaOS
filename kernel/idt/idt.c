@@ -26,7 +26,7 @@ struct idt_desc idt_descriptors[TOTAL_INTERRUPTS]; // Interrupt descriptor table
 struct idtr_desc idtr_descriptor; // Interrupt descriptor table register
 
 extern void idt_load(struct idtr_desc * idtr);
-extern void no_inth();
+extern void general_execption();
 extern void isr_0x80();
 extern void isr_0x21();
 
@@ -34,7 +34,7 @@ void* isr_0x80_handler(int command, struct interrupt_frame* iframe);
 
 // no int handler is mapped to no_inth, called when an interrupt has not been defined yet. 
 // this is done to avoid resetting the processor accidentally.
-void no_int_handler(){
+void general_execption_handler(){
     outb(0x20,0x20);
 }
 
@@ -54,11 +54,11 @@ void idt_init(){
     idtr_descriptor.base  = (uint32_t) idt_descriptors;
 
     for(int _intr=0;_intr<TOTAL_INTERRUPTS;_intr++){
-        idt_set(_intr, no_inth);
+        idt_set(_intr, general_execption);
     }
 
     idt_set(0x80, isr_0x80); // for system calls 
-    idt_set(0x21, isr_0x21); // for keyboard
+    idt_set(0x21, isr_0x21); // for keyboard interrupts
 
     // tell processor where idt is. check idt.s
     idt_load(&idtr_descriptor);
@@ -74,6 +74,7 @@ void* isr_0x80_handler(int command, struct interrupt_frame* iframe){
     void* _ret = __0x80_command_handler(command, iframe);
 
     change_to_current_task_page_directory(); // come back to process virtual address space
+
 
     return _ret;
 }

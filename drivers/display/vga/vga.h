@@ -15,6 +15,7 @@ void kpanic(const char* str);
 void kclear_display();
 uint32_t kprintf_wc(const char * str, uint8_t color);
 void kprint_int(int num);
+void kputchar(char c);
 
 
 #endif

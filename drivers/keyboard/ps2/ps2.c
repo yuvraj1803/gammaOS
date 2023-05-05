@@ -69,20 +69,17 @@ void ps2_interrupt_handler(){
     uint8_t scancode = insb(PS2_DATA_PORT);
 
     if(scancode & PS2_KEY_RELEASED){
-        // not doing anything for now
         return;
     }
 
     char input_char = ps2_scancode_to_char(scancode);
 
-    kprintf((const char*) &input_char);
-
     keyboard_put(input_char);
-
 
     // if there is no task running, there will be a garbage value loaded into cr3.
     // great way to break your computer.
     if(current_task()) change_to_current_task_page_directory();
+
     
 
 }
