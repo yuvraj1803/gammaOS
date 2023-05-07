@@ -1,3 +1,10 @@
+
+/*
+ *
+ * Copyright (c) 2023 Yuvraj Sakshith <ysakshith@gmail.com>
+ *
+ */
+
 #ifndef __0x80_H__
 #define __0x80_H__
 

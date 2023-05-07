@@ -1,3 +1,10 @@
+/*
+ *
+ * Copyright (c) 2023 Yuvraj Sakshith <ysakshith@gmail.com>
+ *
+ */
+
+
 #ifndef __PS2_H__
 #define __PS2_H__
 
