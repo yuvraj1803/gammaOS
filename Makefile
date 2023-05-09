@@ -6,7 +6,7 @@ FILES = ./build/kernel.s.o ./build/kernel.o ./build/idt/idt.S.o \
 ./build/task/tss/tss.s.o ./build/task/task.o ./build/fs/fat16/fat16.o ./build/fs/vfs/vfs.o \
 ./build/fs/file.o ./build/task/process/process.o ./build/task/task.s.o ./build/idt/__0x80/__0x80.o \
  ./build/idt/__0x80/io/io.o ./build/drivers/keyboard/keyboard.o ./build/drivers/keyboard/ps2/ps2.o \
- ./build/g-loader/elf/elf.o
+ ./build/g-loader/elf/elf.o ./build/g-loader/g-loader.o
 
  
 INCLUDES = -I./kernel
@@ -120,6 +120,9 @@ all: ./bin/boot.bin ./bin/kernel.bin make_programs
 
 ./build/g-loader/elf/elf.o: ./g-loader/elf/elf.c
 	i686-elf-gcc $(INCLUDES) -I./g-loader/elf $(FLAGS) -std=gnu99 -c ./g-loader/elf/elf.c -o ./build/g-loader/elf/elf.o 
+
+./build/g-loader/g-loader.o: ./g-loader/g-loader.c
+	i686-elf-gcc $(INCLUDES) -I./g-loader $(FLAGS) -std=gnu99 -c ./g-loader/g-loader.c -o ./build/g-loader/g-loader.o 
 
 
 make_programs:

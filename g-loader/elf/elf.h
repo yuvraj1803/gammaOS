@@ -72,6 +72,7 @@ typedef int32_t Elf32_Sword;
 typedef uint32_t Elf32_Addr;
 typedef int32_t Elf32_Off;
 
+
 // Program Header
 typedef struct
 {
@@ -160,5 +161,14 @@ typedef struct{
 
 
 } ELF_FILE;
+
+uint8_t                 ELF_validate_Phdr(Elf32_Ehdr* hdr);
+uint8_t                 ELF_validate_Shdr(Elf32_Ehdr* hdr);
+Elf32_Ehdr*             ELF_get_Ehdr(ELF_FILE* file);
+Elf32_Phdr*             ELF_get_Phdr(ELF_FILE* file, uint32_t index);
+Elf32_Shdr*             ELF_get_Shdr(ELF_FILE* file, uint32_t index);
+char*                   ELF_get_string_table(ELF_FILE* file);
+uint8_t                 ELF_validate_elf_file(ELF_FILE* file);
+
 
 #endif

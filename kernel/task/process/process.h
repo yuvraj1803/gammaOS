@@ -9,28 +9,36 @@
 
 #include "../../../config.h"
 #include <stdint.h>
+#include "../../../g-loader/elf/elf.h"
 
-struct process* process_get(uint16_t pid);
-struct process* process_new(const char* filename);  
-struct process* process_current();
+struct process *process_get(uint16_t pid);
+struct process *process_new(const char *filename);
+struct process *process_current();
 
-enum{
+enum
+{
     PROCESS_ELF_FILE,
     PROCESS_BIN_FILE
 };
 
-struct process{
+struct process
+{
 
     uint16_t pid; // process id
 
     char file[FS_MAX_PATH_LENGTH];
 
-    struct task* task; // main task
+    struct task *task; // main task
 
-    void* mem_allocations[PROCESS_MAX_PROCESS_MEM_ALLOCATIONS]; // all dynamic memory allocations done by the process
+    void *mem_allocations[PROCESS_MAX_PROCESS_MEM_ALLOCATIONS]; // all dynamic memory allocations done by the process
 
-    void *physical_address; // pointer to process memory
-    void* stack; // pointer to process stack
+
+    union{
+        void*       raw_data;
+        ELF_FILE*   elf_data;
+    };
+    
+    void *stack;            // pointer to process stack
 
     uint32_t size; // size of memory pointed by "physical_address"
 
@@ -38,12 +46,12 @@ struct process{
 
     // keyboard buffer for the process
 
-    struct keyboard_buffer{
+    struct keyboard_buffer
+    {
         char buffer[PROCESS_MAX_KEYBOARD_BUFFER_SIZE];
         int head;
         int tail;
     } keyboard_buf;
-
 };
 
 #endif

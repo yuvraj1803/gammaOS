@@ -13,6 +13,8 @@
 #include "../task.h"
 #include "../../../mm/heap/kheap.h"
 #include "../../../mm/paging/paging.h"
+#include "../../../g-loader/g-loader.h"
+#include "../../../g-loader/elf/elf.h"
 // #include "../../../kernel/kernel.h"
 
 struct process* current_process = 0;
@@ -69,15 +71,15 @@ static int8_t process_load_binary(struct process* _process){
     }
 
     _process->size = stat.size;
-    _process->physical_address = kzalloc(_process->size);
+    _process->raw_data = kzalloc(_process->size);
 
-    if(!_process->physical_address){
+    if(!_process->raw_data){
         fclose(fd);
         return -ERR_PROCESS_LOAD_FAIL;
     }
 
-    if(fread(_process->physical_address, _process->size, 1, fd) < 0){
-        kfree(_process->physical_address);
+    if(fread(_process->raw_data, _process->size, 1, fd) < 0){
+        kfree(_process->raw_data);
         fclose(fd);
         return -ERR_PROCESS_LOAD_FAIL;
     }
@@ -90,15 +92,40 @@ static int8_t process_load_binary(struct process* _process){
 
 }
 
+static int8_t process_load_elf(struct process* _process){
+    ELF_FILE* elf_file;
+    char* filename = _process->file;
+
+    if(gloader_load_elf(filename, &elf_file) < 0) return -ERR_PROCESS_LOAD_FAIL;
+
+
+    _process->file_type = PROCESS_ELF_FILE;
+    _process->elf_data = elf_file;
+
+
+    return SUCCESS;
+
+}
+
 static int8_t process_load_data(struct process* _process){
 
-    return process_load_binary(_process);
 
+    int elf_load_status = process_load_elf(_process);
+
+    // we try to check if the file provided is an elf file first.
+    // if it is, then we load it and leave.
+    // otherwise, we treat it as a raw binary and load it the way it is.
+
+    if(elf_load_status < 0){
+        if(process_load_binary(_process) < 0) return -ERR_PROCESS_LOAD_FAIL;
+    }
+
+    return SUCCESS;
 }
 
 static int8_t process_map_binary(struct process* _process){
 
-    if(paging_map_range(_process->task->task_space, (void*)TASK_DEFAULT_START, _process->physical_address, (void*)  paging_align_to_page((uint32_t)_process->physical_address + _process->size), PAGE_WRITE_ACCESS | PAGE_PRESENT | PAGE_USER_ACCESS) < 0){
+    if(paging_map_range(_process->task->task_space, (void*)TASK_DEFAULT_START, _process->raw_data, (void*)  paging_align_to_page((uint32_t)_process->raw_data + _process->size), PAGE_WRITE_ACCESS | PAGE_PRESENT | PAGE_USER_ACCESS) < 0){
         return -ERR_PROCESS_MAPPING_FAILED;
     }
 
