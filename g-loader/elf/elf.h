@@ -15,6 +15,7 @@
 */
 
 #include <stdint.h>
+#include "../config.h"
 
 #define PF_X 0x01
 #define PF_W 0x02
@@ -139,5 +140,25 @@ typedef struct
     unsigned char   st_other;
     Elf32_Half      st_shndx;
 } __attribute__((packed)) Elf32_Sym;
+
+
+typedef struct{
+
+    char filename[FS_MAX_PATH_LENGTH];
+    uint32_t size; // file size in bytes
+
+    void* data; // file data
+
+
+    // base and end addresses in process virtual memory
+    void* vbase;
+    void* vend;
+
+    // base and end addresses in physical memory
+    void* pbase;
+    void* pend;
+
+
+} ELF_FILE;
 
 #endif
