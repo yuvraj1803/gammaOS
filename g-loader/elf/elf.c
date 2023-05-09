@@ -44,7 +44,7 @@ Elf32_Phdr* ELF_get_Phdr(ELF_FILE* file, uint32_t index){
 }
 
 void* ELF_get_Phdr_physical_address(ELF_FILE* elf_file, Elf32_Phdr* phdr){
-    return (void*)((uint32_t) elf_file + phdr->p_offset);
+    return (void*)((uint32_t) elf_file->data + phdr->p_offset);
 }
 
 // returns 'index'th section header
