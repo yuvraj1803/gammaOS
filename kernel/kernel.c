@@ -95,17 +95,17 @@ void kinit(){
 
 
 
-    // struct process* p = process_new("A:/programs/yuvr/yuvr.o");
+    struct process* p = process_new("A:/programs/yuvr/yuvr.o");
 
-    // if(!p){
-    //     kpanic("process not created!!:(\n");
-    // }   
+    if(!p){
+        kpanic("process not created!!:(\n");
+    }   
 
-    // __enable_irq(); // enable interrupts
+    __enable_irq(); // enable interrupts
 
 
 
-    // gammaos_first_ever_task();
+    gammaos_first_ever_task();
 
 
 

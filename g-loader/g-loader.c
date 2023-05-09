@@ -75,8 +75,10 @@ int gloader_load_elf(char* filename, ELF_FILE** elf_file_out){
         return -ERR_FS_FREAD_FAILED;
     }
 
+    elf_file->data = elf_data;
+
     // checking elf signatures, and other flags...
-    if(!ELF_validate_elf_file(elf_file)){
+    if(ELF_validate_elf_file(elf_file) < 0){
         kfree(elf_file);
         kfree(elf_data);
         fclose(fd);
