@@ -6,7 +6,7 @@ DATA_SEG equ 0x10
 global _start
 global set_all_segments_to_kernel_data_segment
 
-extern kinit
+extern kernel_start
 
 _start:
 	; init memory segments
@@ -24,7 +24,7 @@ _start:
 	call pic_init
 	
 	; call the kernel!
-	call kinit
+	call kernel_start
 
 	jmp $
 

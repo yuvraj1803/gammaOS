@@ -22,7 +22,7 @@ void* __0x80_PRINT(struct interrupt_frame* iframe){
     char arg_in_kernel_space[1024];
     copy_data_from_task_to_kernel(current_task(), arg, (void*) arg_in_kernel_space, sizeof(arg_in_kernel_space));
 
-    kprintf(arg_in_kernel_space);
+    kputs(arg_in_kernel_space);
 
     return (void*) SUCCESS;
 }

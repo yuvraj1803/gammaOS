@@ -43,7 +43,7 @@ void change_to_kernel_page_directory(){
     load_page_directory(kernel_space->pd);
 }
 
-void kinit(){
+void kernel_start(){
 
     __disable_irq();
 

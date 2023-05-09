@@ -10,7 +10,7 @@
 #include <stdint.h>
 
 void init();
-uint32_t kprintf(const char * str);
+uint32_t kputs(const char * str);
 void kprint_int(int num);
 void kpanic(const char* str);
 void set_all_segments_to_user_data_segment();

@@ -30,7 +30,7 @@ uint16_t kmake_char(char c, char color){
     return (color << 8) | c;
 }
 
-uint32_t kprintf(const char * str){
+uint32_t kputs(const char * str){
     uint32_t strlen = 0;
 
     while(str[strlen]){
@@ -142,7 +142,7 @@ uint32_t kprintf_wc(const char * str, uint8_t color){
 
 
 void kpanic(const char* str){
-    kprintf(str);
+    kputs(str);
     while(1); // halt the kernel at this point.
 }
 

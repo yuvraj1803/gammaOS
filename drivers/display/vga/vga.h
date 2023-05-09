@@ -9,13 +9,13 @@
 
 #include <stdint.h>
 
-void vga_init();
-uint32_t kprintf(const char * str);
-void kpanic(const char* str);
-void kclear_display();
-uint32_t kprintf_wc(const char * str, uint8_t color);
-void kprint_int(int num);
-void kputchar(char c);
+void        vga_init();
+uint32_t    kputs(const char * str);
+void        kpanic(const char* str);
+void        kclear_display();
+uint32_t    kprintf_wc(const char * str, uint8_t color);
+void        kprint_int(int num);
+void        kputchar(char c);
 
 
 #endif
