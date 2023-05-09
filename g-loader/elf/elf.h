@@ -166,7 +166,6 @@ uint8_t                 ELF_validate_Phdr(Elf32_Ehdr* hdr);
 uint8_t                 ELF_validate_Shdr(Elf32_Ehdr* hdr);
 Elf32_Ehdr*             ELF_get_Ehdr(ELF_FILE* file);
 Elf32_Phdr*             ELF_get_Phdr(ELF_FILE* file, uint32_t index);
-void*                   ELF_get_Phdr_physical_address(ELF_FILE* elf_file, Elf32_Phdr* phdr);
 Elf32_Shdr*             ELF_get_Shdr(ELF_FILE* file, uint32_t index);
 char*                   ELF_get_string_table(ELF_FILE* file);
 uint8_t                 ELF_validate_elf_file(ELF_FILE* file);

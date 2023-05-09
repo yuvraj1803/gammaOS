@@ -43,9 +43,6 @@ Elf32_Phdr* ELF_get_Phdr(ELF_FILE* file, uint32_t index){
     return &((Elf32_Phdr*)((uint32_t) ELF_get_Ehdr(file) + ELF_get_Ehdr(file)->e_phoff))[index];
 }
 
-void* ELF_get_Phdr_physical_address(ELF_FILE* elf_file, Elf32_Phdr* phdr){
-    return (void*)((uint32_t) elf_file->data + phdr->p_offset);
-}
 
 // returns 'index'th section header
 Elf32_Shdr* ELF_get_Shdr(ELF_FILE* file, uint32_t index){

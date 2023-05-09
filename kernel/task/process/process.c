@@ -143,7 +143,7 @@ static int8_t process_map_elf(struct process* _process){
         Elf32_Phdr* phdr = ELF_get_Phdr(elf_file, nphdr); // get the 'nphdr'th program header
 
         // physical address of current program header segment 
-        void* paddr = ELF_get_Phdr_physical_address(elf_file, phdr);
+        void* elf_file_code_physical_address = (void*)((uint32_t) elf_file->data + phdr->p_offset);
         int page_flags = PAGE_PRESENT | PAGE_USER_ACCESS; // write access not given
 
         if(phdr->p_flags & PF_W){
@@ -151,7 +151,7 @@ static int8_t process_map_elf(struct process* _process){
             page_flags |= PAGE_WRITE_ACCESS;
         }
 
-        if(paging_map_range(_process->task->task_space, (void*)paging_align_to_page_lower(phdr->p_vaddr), (void*) paging_align_to_page_lower((uint32_t)paddr), (void*) paging_align_to_page_upper((uint32_t) paddr + phdr->p_memsz) ,page_flags) < 0){
+        if(paging_map_range(_process->task->task_space, (void*)paging_align_to_page_lower(phdr->p_vaddr), (void*) paging_align_to_page_lower((uint32_t)elf_file_code_physical_address), (void*) paging_align_to_page_upper((uint32_t) elf_file_code_physical_address + phdr->p_memsz) ,page_flags) < 0){
             return -ERR_PROCESS_MAPPING_FAILED;
         }
 
