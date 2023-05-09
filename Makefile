@@ -2,7 +2,7 @@ FILES = ./build/kernel.s.o ./build/kernel.o ./build/idt/idt.S.o \
 ./build/idt/idt.o ./build/mm/memory.o ./build/io/io.s.o ./build/mm/heap/heap.o \
 ./build/mm/heap/kheap.o ./build/mm/paging/paging.s.o ./build/mm/paging/paging.o \
 ./build/drivers/disk/disk.o ./build/drivers/display/vga/vga.o ./build/fs/parser/parser.o \
-./build/string/string.o ./build/debug/debug.o ./build/gdt/gdt.o ./build/gdt/gdt.s.o \
+./build/string/string.o ./build/gdt/gdt.o ./build/gdt/gdt.s.o \
 ./build/task/tss/tss.s.o ./build/task/task.o ./build/fs/fat16/fat16.o ./build/fs/vfs/vfs.o \
 ./build/fs/file.o ./build/task/process/process.o ./build/task/task.s.o ./build/idt/__0x80/__0x80.o \
  ./build/idt/__0x80/io/io.o ./build/drivers/keyboard/keyboard.o ./build/drivers/keyboard/ps2/ps2.o \
@@ -82,8 +82,6 @@ all: ./bin/boot.bin ./bin/kernel.bin make_programs
 ./build/string/string.o: ./string/string.c
 	i686-elf-gcc $(INCLUDES) -I./string $(FLAGS) -std=gnu99 -c ./string/string.c -o ./build/string/string.o
 
-./build/debug/debug.o: ./debug/debug.c
-	i686-elf-gcc $(INCLUDES) -I./debug $(FLAGS) -std=gnu99 -c ./debug/debug.c -o ./build/debug/debug.o
 
 ./build/gdt/gdt.o: ./kernel/gdt/gdt.c
 	i686-elf-gcc $(INCLUDES) -I./kernel/gdt $(FLAGS) -std=gnu99 -c ./kernel/gdt/gdt.c -o ./build/gdt/gdt.o
