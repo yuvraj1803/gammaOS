@@ -56,7 +56,8 @@ static int8_t init_task(struct task* _task, struct process* _process){
     _task->task_space = create_virtual_address_space(PAGE_PRESENT | PAGE_USER_ACCESS);
     if(_task->task_space == 0x0) return -ERR_TASK_FAIL;
 
-    _task->registers.ip =  TASK_DEFAULT_START;
+    // if the input file is an elf file, we change the entry point to 'e_entry' definded in the file's elf header.
+    _task->registers.ip =  (_process->file_type == PROCESS_ELF_FILE ? ((Elf32_Ehdr* )_process->elf_data)->e_entry : TASK_DEFAULT_START);
     _task->registers.esp = TASK_DEFAULT_STACK_BEGIN;
     _task->registers.ss = USER_DATA_SELECTOR;
     _task->registers.cs = USER_CODE_SELECTOR;
