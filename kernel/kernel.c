@@ -95,11 +95,11 @@ void kinit(){
 
 
 
-    struct process* p = process_new("A:/programs/yuvr/yuvr.bin");
+    struct process* p = process_new("A:/programs/yuvr/yuvr.elf");
 
     if(!p){
         kpanic("process not created!!:(\n");
-    }
+    }   
 
     __enable_irq(); // enable interrupts
 
