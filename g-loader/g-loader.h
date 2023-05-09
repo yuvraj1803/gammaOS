@@ -3,6 +3,11 @@
 
 #include "../config.h"
 
+typedef struct ELF_FILE{
 
+    char filename[FS_MAX_PATH_LENGTH];
+
+
+};
 
 #endif
