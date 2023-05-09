@@ -32,3 +32,20 @@ void* memcpy(void* tgt, const void* src, size_t _size){
     return tgt;
 
 }
+
+// compare first 'size' bytes of buf1 and buf2
+// returns 0 if they are the same
+uint8_t memcmp(void* buf1, void* buf2, uint32_t size){
+    uint8_t* buf1_ptr = (uint8_t*) buf1;
+    uint8_t* buf2_ptr = (uint8_t*) buf2;
+
+    while(size-- && buf1_ptr != 0 && buf2_ptr != 0){
+        if(*buf1_ptr != *buf2_ptr) return 1;
+
+        buf1_ptr++;
+        buf2_ptr++;
+    }
+
+    return 0;
+
+}

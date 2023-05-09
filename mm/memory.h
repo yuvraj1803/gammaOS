@@ -12,6 +12,8 @@
 
 void * memset(void * base_addr, int init_val, size_t size);
 void* memcpy(void* tgt, const void* src, size_t _size);
+uint8_t memcmp(void* buf1, void* buf2, uint32_t size);
+
 
 
 #endif

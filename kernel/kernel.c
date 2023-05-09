@@ -110,13 +110,6 @@ void kinit(){
 
 
     while(1){}
-
-    // int fd = fopen("A:/yuvr.bin",'r');
-    // char buf[100];
-    // fread((uint8_t*)buf,100,1,fd);
-    
-    // kprintf(buf);
-
     
 
 
