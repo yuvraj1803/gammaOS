@@ -40,7 +40,8 @@ void destroy_virtual_address_space(struct vaddr_space* _space);
 
 int8_t map_vaddr_to_val(struct page_directory* pd, void* vaddr, uint32_t val);
 int8_t paging_map_range(struct vaddr_space* _vspace, void* vaddr, void* paddr, void* endaddr, int flags);
-uint32_t paging_align_to_page(uint32_t address);
+uint32_t paging_align_to_page_upper(uint32_t address);
+uint32_t paging_align_to_page_lower(uint32_t address);
 void change_to_kernel_page_directory();
 uint32_t paging_virt_to_phy(struct vaddr_space* _vspace, void* vaddr);
 

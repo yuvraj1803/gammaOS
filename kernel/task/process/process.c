@@ -15,6 +15,7 @@
 #include "../../../mm/paging/paging.h"
 #include "../../../g-loader/g-loader.h"
 #include "../../../g-loader/elf/elf.h"
+
 // #include "../../../kernel/kernel.h"
 
 struct process* current_process = 0;
@@ -125,12 +126,38 @@ static int8_t process_load_data(struct process* _process){
 
 static int8_t process_map_binary(struct process* _process){
 
-    if(paging_map_range(_process->task->task_space, (void*)TASK_DEFAULT_START, _process->raw_data, (void*)  paging_align_to_page((uint32_t)_process->raw_data + _process->size), PAGE_WRITE_ACCESS | PAGE_PRESENT | PAGE_USER_ACCESS) < 0){
+    if(paging_map_range(_process->task->task_space, (void*)TASK_DEFAULT_START, _process->raw_data, (void*)  paging_align_to_page_upper((uint32_t)_process->raw_data + _process->size), PAGE_WRITE_ACCESS | PAGE_PRESENT | PAGE_USER_ACCESS) < 0){
         return -ERR_PROCESS_MAPPING_FAILED;
     }
 
     return SUCCESS;
 
+}
+
+static int8_t process_map_elf(struct process* _process){
+    
+    ELF_FILE*   elf_file = _process->elf_data;
+    Elf32_Ehdr* ehdr = ELF_get_Ehdr(elf_file);
+
+    for(int nphdr = 0; nphdr < ehdr->e_phnum; nphdr++){
+        Elf32_Phdr* phdr = ELF_get_Phdr(elf_file, nphdr); // get the 'nphdr'th program header
+
+        // physical address of current program header segment 
+        void* paddr = ELF_get_Phdr_physical_address(elf_file, phdr);
+        int page_flags = PAGE_PRESENT | PAGE_USER_ACCESS; // write access not given
+
+        if(phdr->p_flags & PF_W){
+            // write access is given only if certain flag set in program header.
+            page_flags |= PAGE_WRITE_ACCESS;
+        }
+
+        if(paging_map_range(_process->task->task_space, (void*)paging_align_to_page_lower(phdr->p_vaddr), (void*) paging_align_to_page_lower((uint32_t)paddr), (void*) paging_align_to_page_upper((uint32_t) paddr + phdr->p_memsz) ,page_flags) < 0){
+            return -ERR_PROCESS_MAPPING_FAILED;
+        }
+
+    }
+
+    return SUCCESS;
 }
 
 void process_switch(struct process* _process){
@@ -145,8 +172,14 @@ static int8_t process_map_memory(struct process* _process){
         if(process_map_binary_res < 0) return process_map_binary_res;
     }
 
+    // if file type is elf (executable linker format)
+    if(_process->file_type == PROCESS_ELF_FILE){
+        int8_t process_map_elf_res = process_map_elf(_process);
+        if(process_map_elf_res < 0) return process_map_elf_res;
+    }
+
     // we will map stack in the reverse order because we are using a full descending stack. ie, it grows downwards
-    int8_t process_map_stack_res = paging_map_range(_process->task->task_space, (void*)TASK_DEFAULT_STACK_END,_process->stack, (void*)paging_align_to_page((uint32_t) _process->stack + TASK_STACK_SIZE),  PAGE_PRESENT | PAGE_USER_ACCESS | PAGE_WRITE_ACCESS);
+    int8_t process_map_stack_res = paging_map_range(_process->task->task_space, (void*)TASK_DEFAULT_STACK_END,_process->stack, (void*)paging_align_to_page_upper((uint32_t) _process->stack + TASK_STACK_SIZE),  PAGE_PRESENT | PAGE_USER_ACCESS | PAGE_WRITE_ACCESS);
     if(process_map_stack_res < 0) return process_map_stack_res;
 
     return SUCCESS; 

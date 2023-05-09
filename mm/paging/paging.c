@@ -31,7 +31,7 @@ uint8_t address_page_aligned(void *vaddr)
     return (uint32_t)vaddr % PAGE_SIZE == 0;
 }
 
-uint32_t paging_align_to_page(uint32_t address){
+uint32_t paging_align_to_page_upper(uint32_t address){
     if(address %PAGE_SIZE){
         return address - address%PAGE_SIZE + PAGE_SIZE;
     }
@@ -39,6 +39,13 @@ uint32_t paging_align_to_page(uint32_t address){
     return address; // already aligned.
 }
 
+uint32_t paging_align_to_page_lower(uint32_t address){
+    if(address % PAGE_SIZE){
+        return address - address % PAGE_SIZE;
+    }
+
+    return address; // already aligned
+}
 
 int8_t paging_map_range(struct vaddr_space* _vspace, void* vaddr, void* paddr, void* endaddr, int flags){
 
