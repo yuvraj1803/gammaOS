@@ -13,14 +13,14 @@ INCLUDES = -I./kernel
 FLAGS = -g -ffreestanding -falign-jumps -falign-functions -falign-labels -falign-loops -fstrength-reduce -fomit-frame-pointer -finline-functions -Wno-unused-function -fno-builtin -Werror -Wno-unused-label -Wno-cpp -Wno-unused-parameter -Wno-unused-variable -Wno-unused-value  -nostdlib -nostartfiles -nodefaultlibs -Wall -O0 -Iinc
 
 
-all: ./bin/boot.bin ./bin/kernel.bin make_programs
+all: ./bin/boot.bin ./bin/kernel.bin make_usrspc
 	rm -rf ./bin/os.bin
 	dd if=./bin/boot.bin >> ./bin/os.bin
 	dd if=./bin/kernel.bin >> ./bin/os.bin
 	dd if=/dev/zero bs=1048576 count=16 >> ./bin/os.bin
 
 	sudo mount -t vfat ./bin/os.bin /mnt/d
-	sudo cp -r ./programs /mnt/d
+	sudo cp -r ./usrspc /mnt/d
 
 	sudo umount /mnt/d
 
@@ -123,13 +123,15 @@ all: ./bin/boot.bin ./bin/kernel.bin make_programs
 	i686-elf-gcc $(INCLUDES) -I./g-loader $(FLAGS) -std=gnu99 -c ./g-loader/g-loader.c -o ./build/g-loader/g-loader.o 
 
 
-make_programs:
-	cd ./programs/yuvr && $(MAKE) all
+make_usrspc:
+	cd ./usrspc/stdlib/_start && $(MAKE) all
+	cd ./usrspc/init && 		 $(MAKE) all
 
-clean_programs:
-	cd ./programs/yuvr && $(MAKE) clean
+clean_usrspc:
+	cd ./usrspc/stdlib/_start && $(MAKE) clean
+	cd ./usrspc/init && 		 $(MAKE) clean
 
-clean:
+clean: clean_usrspc
 	rm -rf ./bin/boot.bin	
 	rm -rf ./bin/os.bin
 	rm -rf ./bin/kernel.bin
