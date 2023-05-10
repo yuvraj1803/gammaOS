@@ -1,3 +1,10 @@
+/*
+ *
+ * Copyright (c) 2023 Yuvraj Sakshith <ysakshith@gmail.com>
+ *
+ */
+
+
 #include "g-loader.h"
 #include "elf/elf.h"
 #include "../kernel/kstatus.h"

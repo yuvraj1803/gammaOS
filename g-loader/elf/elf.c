@@ -1,3 +1,10 @@
+/*
+ *
+ * Copyright (c) 2023 Yuvraj Sakshith <ysakshith@gmail.com>
+ *
+ */
+
+
 #include "elf.h"
 #include "../mm/memory.h"
 #include "../config.h"
