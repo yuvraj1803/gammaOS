@@ -213,6 +213,13 @@ struct process* process_new(const char* filename){
         return 0;
     }
 
+    
+    if(process_load_data(_process) < 0){
+        kfree(_process->stack);
+        kfree(_process);
+        return 0;
+    }
+
     _process->task = new_task(_process);
 
     if(!_process->task){
@@ -220,15 +227,7 @@ struct process* process_new(const char* filename){
         kfree(_process);
         return 0;
     }
-    
-    if(process_load_data(_process) < 0){
-        kfree(_process->stack);
-        close_task(_process->task);
-        kfree(_process);
-        return 0;
-    }
 
-    
 
     if(process_map_memory(_process) < 0){
         kfree(_process->stack);
@@ -237,6 +236,9 @@ struct process* process_new(const char* filename){
         return 0;
     }
     process_list[_process->pid] = _process;
+
+
+
 
     if(!current_process){
         current_process = _process;
