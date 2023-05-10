@@ -2,7 +2,7 @@ OBJ = ./build/_start.s.o ./build/stdio.o
 INC = ./include
 
 all: $(OBJ)
-	i686-elf-ld -m elf_i386 -relocatable $(OBJ) -o ./stdlib.o
+	i686-elf-ld -m elf_i386 -relocatable $(OBJ) -o ./lib.o
 
 ./build/_start.s.o: ./_start/_start.s
 	nasm -f elf ./_start/_start.s -o ./build/_start.s.o
@@ -12,4 +12,4 @@ all: $(OBJ)
 
 clean:
 	rm -rf $(OBJ)
-	rm -rf ./stdlib.o
+	rm -rf ./lib.o

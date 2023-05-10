@@ -124,11 +124,11 @@ all: ./bin/boot.bin ./bin/kernel.bin make_usrspc
 
 
 make_usrspc:
-	cd ./usrspc/stdlib && $(MAKE) all
+	cd ./usrspc/lib && $(MAKE) all
 	cd ./usrspc/init && 		 $(MAKE) all
 
 clean_usrspc:
-	cd ./usrspc/stdlib && $(MAKE) clean
+	cd ./usrspc/lib && $(MAKE) clean
 	cd ./usrspc/init && 		 $(MAKE) clean
 
 clean: clean_usrspc

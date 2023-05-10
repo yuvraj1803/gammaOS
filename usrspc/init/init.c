@@ -8,7 +8,7 @@
 
 */
 
-#include "../stdlib/include/stdio.h"
+#include "../lib/include/stdio.h"
 
 
 int main(){
