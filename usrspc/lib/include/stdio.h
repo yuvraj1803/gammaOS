@@ -8,5 +8,6 @@
 #define __STDIO_H__
 
 void puts(const char* str);
+void putch(char ch);
 
 #endif

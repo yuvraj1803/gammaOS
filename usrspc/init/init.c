@@ -14,6 +14,9 @@
 int main(){
 
     puts("hello");
+    putch('h');
+
+    while(1){}
 
     return 0;
 }

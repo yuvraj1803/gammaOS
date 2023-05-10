@@ -13,6 +13,7 @@
 #include "../../../../drivers/display/vga/vga.h"
 
 
+// syscall 0
 void* __0x80_PRINT(struct interrupt_frame* iframe){
     void* arg = task_access_stack(current_task(), 0); // string passed.
 
@@ -27,6 +28,8 @@ void* __0x80_PRINT(struct interrupt_frame* iframe){
     return (void*) SUCCESS;
 }
 
+
+// syscall 1
 void* __0x80_GETCH(struct interrupt_frame* iframe){
     void* ch = (void*)((int)keyboard_get());
 
@@ -34,6 +37,7 @@ void* __0x80_GETCH(struct interrupt_frame* iframe){
 
 }
 
+// syscall 2
 void* __0x80_PUTCH(struct interrupt_frame* iframe){
 
     char ch = (char)(int)task_access_stack(current_task(), 0);
