@@ -1,5 +1,7 @@
 [BITS 32]
 
+section .asm
+
 global puts:function
 
 puts:
@@ -7,7 +9,7 @@ puts:
     mov ebp, esp
 
     push dword[ebp+8]
-    mov eax, 1
+    mov eax, 0
     int 0x80
     
     add esp,4
