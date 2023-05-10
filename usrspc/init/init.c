@@ -13,8 +13,10 @@
 
 int main(){
 
-    puts("hello");
-    putch('h');
+    char str[10];
+    getch(str);
+
+    // puts(str);
 
     while(1){}
 

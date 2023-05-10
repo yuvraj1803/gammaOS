@@ -10,4 +10,7 @@
 void puts(const char* str);
 void putch(char ch);
 
+char getch();
+char* gets(char* str);
+
 #endif

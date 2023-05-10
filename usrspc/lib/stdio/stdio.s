@@ -2,9 +2,11 @@
 
 section .asm
 
-global puts:function
+global puts:  function
 global putch: function
 
+global gets:  function
+global getch: function
 puts:
     push ebp
     mov ebp, esp
@@ -29,4 +31,12 @@ putch:
     add esp, 4
 
     pop ebp
+    ret
+
+
+getch:
+    ret
+
+gets:
+    
     ret

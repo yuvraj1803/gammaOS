@@ -23,6 +23,7 @@
 #define PS2_COMMAND_PORT        0x64
 #define PS2_ENABLE_FIRST_PORT   0xAE
 #define PS2_KEY_RELEASED        0x80
+#define PS2_RETURN              0xE05A
 
 
 static uint8_t ps2_scancode_set1[] = {
@@ -77,15 +78,18 @@ void ps2_interrupt_handler(){
 
     change_to_kernel_page_directory();
 
-    uint8_t scancode = insb(PS2_DATA_PORT);
+    uint32_t scancode = insb(PS2_DATA_PORT);
 
     if(scancode & PS2_KEY_RELEASED){
         return;
     }
 
-    char input_char = ps2_scancode_to_char(scancode);
-
-    keyboard_put(input_char);
+    if(scancode == PS2_RETURN){
+        keyboard_put('\n');
+    }else{
+        char input_char = ps2_scancode_to_char(scancode);
+        keyboard_put(input_char);
+    }
 
     // if there is no task running, there will be a garbage value loaded into cr3.
     // great way to break your computer.

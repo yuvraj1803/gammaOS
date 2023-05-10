@@ -12,12 +12,14 @@
 #define VGA_HEIGHT          80
 
 #define PS2_BACKSPACE       0x08
+#define PS2_RETURN          0xE05A
 
 uint16_t * VGA_BASE; // base address of vga text buffer
 uint8_t cursor_x, cursor_y; // current positions on the screen.
 
 
 void kbackspace();
+void kreturn();
 
 void vga_init(){
     VGA_BASE = (uint16_t*) VGA_TEXT_BUFFER;
@@ -31,29 +33,23 @@ uint16_t kmake_char(char c, char color){
 }
 
 uint32_t kputs(const char * str){
-    uint32_t strlen = 0;
+    uint32_t strpos = 0;
 
-    while(str[strlen]){
+    while(str[strpos]){
 
-        if(str[strlen] == '\n'){
+        if(str[strpos] == '\n'){
             cursor_x = 0;
             cursor_y++;
-            strlen++;
+            strpos++;
             continue;
         }
 
-        VGA_BASE[cursor_y * VGA_WIDTH + cursor_x] = kmake_char(str[strlen], 0xf);
-        strlen++;
-        cursor_x++;
+        kputchar(str[strpos]);
 
-
-        if(cursor_x == VGA_WIDTH){
-            cursor_x = 0;
-            cursor_y++;
-        }
+        strpos++;
     }
 
-    return strlen;
+    return strpos;
 
 }
 
@@ -62,6 +58,11 @@ void kputchar(char c){
 
     if(c == PS2_BACKSPACE){
         kbackspace();
+        return;
+    }
+
+    if(c == PS2_RETURN){
+        kreturn(); // pressing the return/enter key
         return;
     }
 
@@ -87,6 +88,11 @@ void kbackspace(){
     cursor_x = (cursor_x - 1)%VGA_WIDTH;
 
 
+}
+
+void kreturn(){
+    kputs("\n");
+    return;
 }
 
 
