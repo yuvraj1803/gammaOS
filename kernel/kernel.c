@@ -95,7 +95,7 @@ void kernel_start(){
 
 
 
-    struct process* p = process_new("A:/usrspc/yuvr/yuvr.o");
+    struct process* p = process_new("A:/usrspc/init/init.o");
 
     if(!p){
         kpanic("process not created!!:(\n");

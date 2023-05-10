@@ -1,4 +1,4 @@
-FILES = ./build/kernel.s.o ./build/kernel.o ./build/idt/idt.S.o \
+OBJ = ./build/kernel.s.o ./build/kernel.o ./build/idt/idt.S.o \
 ./build/idt/idt.o ./build/mm/memory.o ./build/io/io.s.o ./build/mm/heap/heap.o \
 ./build/mm/heap/kheap.o ./build/mm/paging/paging.s.o ./build/mm/paging/paging.o \
 ./build/drivers/disk/disk.o ./build/drivers/display/vga/vga.o ./build/fs/parser/parser.o \
@@ -24,8 +24,8 @@ all: ./bin/boot.bin ./bin/kernel.bin make_usrspc
 
 	sudo umount /mnt/d
 
-./bin/kernel.bin: $(FILES)
-	i686-elf-ld -g -relocatable $(FILES) -o ./build/kernelfull.o
+./bin/kernel.bin: $(OBJ)
+	i686-elf-ld -g -relocatable $(OBJ) -o ./build/kernelfull.o
 	i686-elf-gcc -T ./kernel/linker.ld -o ./bin/kernel.bin -ffreestanding -O0 -nostdlib ./build/kernelfull.o
 
 ./bin/boot.bin: ./boot/boot.s
@@ -135,6 +135,6 @@ clean: clean_usrspc
 	rm -rf ./bin/boot.bin	
 	rm -rf ./bin/os.bin
 	rm -rf ./bin/kernel.bin
-	rm -rf $(FILES)
+	rm -rf $(OBJ)
 	rm -rf ./build/kernelfull.o
 	rm -rf ./kernel/kernel.o
