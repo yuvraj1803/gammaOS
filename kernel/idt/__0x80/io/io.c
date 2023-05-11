@@ -33,9 +33,13 @@ void* __0x80_PRINT(struct interrupt_frame* iframe){
 void* __0x80_GETCH(struct interrupt_frame* iframe){
     void* ch = (void*)((int)keyboard_get());
 
+    if(ch == 0x0) return ch;
+
 #ifdef PRINT_KEYBOARD_INP_TO_SCREEN
-    kputchar((char)(uint32_t)ch); // to know what we are printing
+    kputchar((char)(uint32_t)ch); // to know what we are typing
 #endif
+
+
     return ch;
 
 }

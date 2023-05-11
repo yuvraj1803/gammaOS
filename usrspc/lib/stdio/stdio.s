@@ -34,7 +34,23 @@ putch:
     ret
 
 
+wait_for_key_press:
+
+    mov eax, 1
+    int 0x80
+    cmp eax, 0
+    je wait_for_key_press
+
+    ret
+
 getch:
+
+    push ebp
+    mov ebp, esp
+
+    call wait_for_key_press
+
+    pop ebp
     ret
 
 gets:

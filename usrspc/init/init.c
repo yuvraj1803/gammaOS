@@ -12,11 +12,7 @@
 
 
 int main(){
-
-    char str[10];
-    getch(str);
-
-    // puts(str);
+    
 
     while(1){}
 
