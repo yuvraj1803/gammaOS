@@ -12,7 +12,7 @@
 #define VGA_HEIGHT          80
 
 #define PS2_BACKSPACE       0x08
-#define PS2_RETURN          0xE05A
+#define PS2_RETURN          0x1C
 
 uint16_t * VGA_BASE; // base address of vga text buffer
 uint8_t cursor_x, cursor_y; // current positions on the screen.

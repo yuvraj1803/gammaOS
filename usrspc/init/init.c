@@ -12,7 +12,13 @@
 
 
 int main(){
-    
+
+    while(1){
+
+        char c = getch();
+        if(c == '\n') break;
+        putch(c);
+    }
 
     while(1){}
 

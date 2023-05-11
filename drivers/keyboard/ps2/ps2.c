@@ -23,7 +23,7 @@
 #define PS2_COMMAND_PORT        0x64
 #define PS2_ENABLE_FIRST_PORT   0xAE
 #define PS2_KEY_RELEASED        0x80
-#define PS2_RETURN              0xE05A
+#define PS2_RETURN              0x1C
 
 
 static uint8_t ps2_scancode_set1[] = {
