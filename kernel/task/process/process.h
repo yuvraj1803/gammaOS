@@ -14,6 +14,9 @@
 struct process *process_get(uint16_t pid);
 struct process *process_new(const char *filename);
 struct process *process_current();
+void* process_malloc(uint32_t size);
+void* process_free(void* base_addr);
+
 
 enum
 {

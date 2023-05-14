@@ -9,16 +9,14 @@
 */
 
 #include "../lib/include/stdio.h"
+#include "../lib/include/stdlib.h"
 
 
 int main(){
 
-    while(1){
+    void* mem = malloc(10);
 
-        char c = getch();
-        if(c == '\n') break;
-        putch(c);
-    }
+    free(mem);
 
     while(1){}
 

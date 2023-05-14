@@ -249,3 +249,47 @@ struct process* process_new(const char* filename){
 
 
 }
+
+void* process_malloc(uint32_t size){
+
+    struct process* _process = process_current();
+
+    for(int allocation=0; allocation < PROCESS_MAX_PROCESS_MEM_ALLOCATIONS; allocation++){
+        if(_process->mem_allocations[allocation] == 0){
+            // if we find a free slot to place our allocation,
+            void* base = kzalloc(size);
+            _process->mem_allocations[allocation] = base;
+
+            return base;
+        }
+    }
+
+    // we come to this part of the code if we couldn't find any allocation.
+    // so we basically return NULL. 
+
+    return 0;
+
+}
+
+void* process_free(void* base_addr){
+    struct process* _process = process_current();
+
+    for(int allocation=0; allocation < PROCESS_MAX_PROCESS_MEM_ALLOCATIONS; allocation++){
+        if(_process->mem_allocations[allocation] == base_addr){
+            // we have found the allocation which we did.
+            // we need to make the block available for future allocation for the same base address.
+            _process->mem_allocations[allocation] = 0;
+
+            kfree(base_addr);
+
+            return base_addr;
+
+        }
+    }
+
+    // if we reach this part of the code, we tried to free some address which we never allocated.
+    // we cant help it, just return NULL.
+
+    return 0; 
+
+}

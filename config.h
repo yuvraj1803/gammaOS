@@ -43,6 +43,6 @@
 
 #define VGA           
 #define PS2    
-// #define PRINT_KEYBOARD_INP_TO_SCREEN
+#define PRINT_KEYBOARD_INP_TO_SCREEN
 
 #endif

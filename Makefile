@@ -6,7 +6,7 @@ OBJ = ./build/kernel.s.o ./build/kernel.o ./build/idt/idt.S.o \
 ./build/task/tss/tss.s.o ./build/task/task.o ./build/fs/fat16/fat16.o ./build/fs/vfs/vfs.o \
 ./build/fs/file.o ./build/task/process/process.o ./build/task/task.s.o ./build/idt/__0x80/__0x80.o \
  ./build/idt/__0x80/io/io.o ./build/drivers/keyboard/keyboard.o ./build/drivers/keyboard/ps2/ps2.o \
- ./build/g-loader/elf/elf.o ./build/g-loader/g-loader.o
+ ./build/g-loader/elf/elf.o ./build/g-loader/g-loader.o ./build/idt/__0x80/mm/heap/heap.o
 
  
 INC = -I./kernel
@@ -121,6 +121,9 @@ all: ./bin/boot.bin ./bin/kernel.bin make_usrspc
 
 ./build/g-loader/g-loader.o: ./g-loader/g-loader.c
 	i686-elf-gcc $(INC) -I./g-loader $(FLAGS) -std=gnu99 -c ./g-loader/g-loader.c -o ./build/g-loader/g-loader.o 
+
+./build/idt/__0x80/mm/heap/heap.o: ./kernel/idt/__0x80/mm/heap/heap.c
+	i686-elf-gcc $(INC) -I./kernel/idt/__0x80/mm/heap $(FLAGS) -std=gnu99 -c ./kernel/idt/__0x80/mm/heap/heap.c -o ./build/idt/__0x80/mm/heap/heap.o
 
 
 make_usrspc:

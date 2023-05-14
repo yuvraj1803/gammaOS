@@ -97,23 +97,23 @@ void kreturn(){
 
 
 void kprint_int(int num) {
-  char buf[32];
-  int i = 0;
-  if (num == 0) {
-    kputchar('0');
-    return;
-  }
-  if (num < 0) {
-    kputchar('-');
-    num = -num;
-  }
-  while (num > 0) {
-    buf[i++] = num % 10 + '0';
-    num /= 10;
-  }
-  while (i > 0) {
-    kputchar(buf[--i]);
-  }
+    char buf[32];
+    int i = 0;
+    if (num == 0) {
+        kputchar('0');
+        return;
+    }
+    if (num < 0) {
+        kputchar('-');
+        num = -num;
+    }
+    while (num > 0) {
+        buf[i++] = num % 10 + '0';
+        num /= 10;
+    }
+    while (i > 0) {
+        kputchar(buf[--i]);
+    }
 }
 
 

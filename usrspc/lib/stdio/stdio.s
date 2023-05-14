@@ -54,5 +54,19 @@ getch:
     ret
 
 gets:
-    
+    push ebp
+    mov ebp, esp
+
+    mov ebx, [ebp+8] ; address of the string passed
+
+.loop:
+    call getch ; this will take one char input and place it in eax
+    mov [ebx], eax
+    add ebx, 4
+    cmp eax, 10 ; compare it with enter key's ascii
+    jne .loop
+
+    mov eax,[ebp+8] ; place address of return string in eax
+
+    pop ebp
     ret

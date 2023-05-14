@@ -16,6 +16,9 @@ enum __0x80_COMMANDS{
     __NR_0_PRINT, 
     __NR_1_GETCH,
     __NR_2_PUTCH,
+    __NR_3_MALLOC,
+    __NR_4_FREE,
+    
 };
 
 
