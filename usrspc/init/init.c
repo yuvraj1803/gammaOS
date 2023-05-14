@@ -14,9 +14,11 @@
 
 int main(){
 
-    void* mem = malloc(10);
+    char str[10];
 
-    free(mem);
+    gets(str);
+
+    puts(str);
 
     while(1){}
 

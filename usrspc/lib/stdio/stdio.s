@@ -62,7 +62,7 @@ gets:
 .loop:
     call getch ; this will take one char input and place it in eax
     mov [ebx], eax
-    add ebx, 4
+    add ebx, 1
     cmp eax, 10 ; compare it with enter key's ascii
     jne .loop
 
