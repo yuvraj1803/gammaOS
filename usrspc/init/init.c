@@ -14,11 +14,9 @@
 
 int main(){
 
-    char str[10];
+    char str[10] = "yuvraj";
 
-    gets(str);
-
-    puts(str);
+    printf("hello world %i", 10);
 
     while(1){}
 

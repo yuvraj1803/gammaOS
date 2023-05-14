@@ -13,4 +13,6 @@ void putch(char ch);
 char getch();
 char* gets(char* str);
 
+int printf(char* fmt, ...);
+
 #endif
