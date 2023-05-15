@@ -260,6 +260,11 @@ void* process_malloc(uint32_t size){
             void* base = kzalloc(size);
             _process->mem_allocations[allocation] = base;
 
+            uint32_t pages_allocated = (size + PAGE_SIZE - 1) / PAGE_SIZE;
+
+            paging_map_range(_process->task->task_space, base, (void*)paging_align_to_page_lower((uint32_t)base),
+                                                         (void*)paging_align_to_page_upper((uint32_t)base + pages_allocated*PAGE_SIZE), PAGE_PRESENT | PAGE_WRITE_ACCESS | PAGE_USER_ACCESS);
+
             return base;
         }
     }
