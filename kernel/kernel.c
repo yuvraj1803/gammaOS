@@ -94,18 +94,16 @@ void kernel_start(){
     enable_paging(); // enable paging
 
 
+    // set-up gshell
+    struct process* proc_gshell = process_new("A:/usrspc/gshell/main.o");
 
-    struct process* p = process_new("A:/usrspc/init/init.o");
-
-    if(!p){
+    if(!proc_gshell){
         kpanic("process not created!!:(\n");
     }   
 
     __enable_irq(); // enable interrupts
 
-
-
-    gammaos_first_ever_task();
+    gammaos_first_ever_task(); // run the shell
 
 
 
