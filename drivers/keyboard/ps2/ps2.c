@@ -1,13 +1,12 @@
-#include "ps2.h"
-#include "../keyboard.h"
-#include <stdint.h>
 /*
  *
  * Copyright (c) 2023 Yuvraj Sakshith <ysakshith@gmail.com>
  *
  */
 
-
+#include "ps2.h"
+#include "../keyboard.h"
+#include <stdint.h>
 #include "../../../io/io.h"
 #include "../../../kernel/kstatus.h"
 #include "../../../mm/paging/paging.h"

@@ -14,6 +14,7 @@
 #define PS2_BACKSPACE       0x08
 #define PS2_RETURN          0xA
 
+
 uint16_t * VGA_BASE; // base address of vga text buffer
 uint8_t cursor_x, cursor_y; // current positions on the screen.
 

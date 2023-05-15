@@ -14,9 +14,6 @@
 
 int main(){
 
-    char str[10] = "yuvraj";
-
-    printf("hello world %i", 10);
 
     while(1){}
 
