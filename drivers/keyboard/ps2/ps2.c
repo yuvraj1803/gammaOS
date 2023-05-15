@@ -23,6 +23,9 @@
 #define PS2_ENABLE_FIRST_PORT   0xAE
 #define PS2_KEY_RELEASED        0x80
 #define PS2_RETURN              0x1C
+#define PS2_BACKSPACE           0x0E
+#define PS2_SPACE               0x39
+#define PS2_CAPS                0x3A
 
 
 static uint8_t ps2_scancode_set1[] = {
@@ -54,6 +57,8 @@ int ps2_keyboard_init(){
     // enable ps2 first port.
     outb(PS2_COMMAND_PORT, PS2_ENABLE_FIRST_PORT);
 
+    ps2.caps_lock = 0; // initially turn off the caps lock.
+
     idt_add_isr_handler(0x21, ps2_interrupt_handler);
 
     return SUCCESS;
@@ -83,10 +88,19 @@ void ps2_interrupt_handler(){
         return;
     }
 
+    if(scancode == PS2_CAPS){
+        ps2.caps_lock = 1;// turn on the caps lock flag.
+    }
+
     if(scancode == PS2_RETURN){
         keyboard_put('\n');
     }else{
         char input_char = ps2_scancode_to_char(scancode);
+
+        if(!ps2.caps_lock && scancode != PS2_BACKSPACE && scancode != PS2_SPACE && input_char >= 'A' && input_char <= 'Z'){ //if caps lock off.
+            input_char += 32; // convert to lower-case.
+        }
+
         keyboard_put(input_char);
     }
 

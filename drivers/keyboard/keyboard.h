@@ -8,11 +8,14 @@
 #ifndef __KEYBOARD_H__
 #define __KEYBOARD_H__
 
+#include <stdint.h>
+
 struct keyboard{
 
     int (*init)();
     char name[32];
     struct keyboard* next;
+    uint8_t caps_lock;
 
 };
 

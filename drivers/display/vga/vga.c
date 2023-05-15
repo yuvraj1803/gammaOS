@@ -11,8 +11,8 @@
 #define VGA_WIDTH           80
 #define VGA_HEIGHT          80
 
-#define PS2_BACKSPACE       0x08
-#define PS2_RETURN          0xA
+#define ASCII_BACKSPACE       0x08
+#define ASCII_RETURN          0xA
 
 
 uint16_t * VGA_BASE; // base address of vga text buffer
@@ -57,12 +57,12 @@ uint32_t kputs(const char * str){
 // prints char into the screen.
 void kputchar(char c){
 
-    if(c == PS2_BACKSPACE){
+    if(c == ASCII_BACKSPACE){
         kbackspace();
         return;
     }
 
-    if(c == PS2_RETURN){
+    if(c == ASCII_RETURN){
         kreturn(); // pressing the return/enter key
         return;
     }
