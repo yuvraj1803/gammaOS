@@ -89,7 +89,7 @@ void ps2_interrupt_handler(){
     }
 
     if(scancode == PS2_CAPS){
-        ps2.caps_lock = 1;// turn on the caps lock flag.
+        ps2.caps_lock ^= 1;// turn on the caps lock flag.
     }
 
     if(scancode == PS2_RETURN){

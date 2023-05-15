@@ -11,6 +11,10 @@ void gshell_init(){
     printf("gammaOS v1.0.0\n");
 }
 
+void gshell_process_command(char* command){
+    puts("Command not found\n");
+}
+
 int main(){
 
 
@@ -22,7 +26,7 @@ int main(){
         char command[30];
         gets(command);
 
-        puts(command);
+        gshell_process_command(command);
 
     }
 

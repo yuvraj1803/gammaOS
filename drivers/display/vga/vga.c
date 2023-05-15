@@ -84,9 +84,12 @@ void kbackspace(){
         return;
     }
 
-    cursor_x = (cursor_x - 1)%VGA_WIDTH;
+    if(cursor_x == 0){
+        cursor_y--;
+    }
+    cursor_x = ((cursor_x - 1)%VGA_WIDTH + VGA_WIDTH) % VGA_WIDTH;
     kputchar(' ');
-    cursor_x = (cursor_x - 1)%VGA_WIDTH;
+    cursor_x = ((cursor_x - 1)%VGA_WIDTH + VGA_WIDTH) % VGA_WIDTH;
 
 
 }
