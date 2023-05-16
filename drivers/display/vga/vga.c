@@ -95,7 +95,8 @@ void kbackspace(){
 }
 
 void kreturn(){
-    kputs("\n");
+    cursor_x = 0;
+    cursor_y++;
     return;
 }
 
