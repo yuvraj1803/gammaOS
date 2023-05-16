@@ -254,6 +254,7 @@ void* process_malloc(uint32_t size){
             // if we find a free slot to place our allocation,
             void* base = kzalloc(size);
             _process->mem_allocations[allocation] = base;
+            _process->mem_allocations_size[allocation] = size;
 
             uint32_t pages_allocated = (size + PAGE_SIZE - 1) / PAGE_SIZE;
 
@@ -279,6 +280,13 @@ void* process_free(void* base_addr){
             // we have found the allocation which we did.
             // we need to make the block available for future allocation for the same base address.
             _process->mem_allocations[allocation] = 0;
+
+            uint32_t allocation_size = _process->mem_allocations_size[allocation];
+            _process->mem_allocations_size[allocation] = 0; // reset the allocation
+
+            uint32_t pages_to_free = (allocation_size + PAGE_SIZE - 1) / allocation_size;
+
+            paging_map_range(_process->task->task_space, (void*)paging_align_to_page_lower((uint32_t)base_addr), (void*)paging_align_to_page_lower((uint32_t)base_addr), (void*)((uint32_t)base_addr + pages_to_free*PAGE_SIZE), PAGE_PRESENT | PAGE_USER_ACCESS | PAGE_WRITE_ACCESS);
 
             kfree(base_addr);
 

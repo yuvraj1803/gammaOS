@@ -36,7 +36,7 @@ struct process
     struct task *task; // main task
 
     void *mem_allocations[PROCESS_MAX_PROCESS_MEM_ALLOCATIONS]; // all dynamic memory allocations done by the process
-
+    uint32_t mem_allocations_size[PROCESS_MAX_PROCESS_MEM_ALLOCATIONS]; // size of the mem_allocations[i]
 
     union{
         void*       raw_data;
