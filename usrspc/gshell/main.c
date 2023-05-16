@@ -6,13 +6,16 @@
 
 
 #include "stdio.h"
+#include "unistd.h"
 
 void gshell_init(){
     printf("gammaOS v1.0.0\n");
 }
 
 void gshell_process_command(char* command){
-    puts("Command not found\n");
+    if(exec(command) < 0){
+        printf("couldnt open file\n");
+    }
 }
 
 int main(){

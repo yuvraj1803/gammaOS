@@ -21,14 +21,13 @@
 struct process* current_process = 0;
 static struct process* process_list[PROCESS_MAX_PROCESSES];
 
-uint8_t processes_initialised = 0;
 
 
 struct process* process_current(){
     return current_process;
 }
 
-static void process_init(){
+void process_init(){
     memset(process_list, 0, sizeof(process_list));
 }
 
@@ -187,10 +186,6 @@ static int8_t process_map_memory(struct process* _process){
 }
 
 struct process* process_new(const char* filename){
-
-    if(!processes_initialised){
-        process_init();
-    }
 
     struct process* _process = kzalloc(sizeof(struct process));
 

@@ -13,6 +13,7 @@
 #include "io/io.h"
 #include "../../task/task.h"
 #include "mm/heap/heap.h"
+#include "process/process.h"
 
 typedef void *(*__0x80_command_function)(struct interrupt_frame *iframe);
 
@@ -29,6 +30,7 @@ void __0x80_init()
     __0x80_add_function(__NR_2_PUTCH, __0x80_PUTCH);
     __0x80_add_function(__NR_3_MALLOC,__0x80_MALLOC);
     __0x80_add_function(__NR_4_FREE,  __0x80_FREE);
+    __0x80_add_function(__NR_5_EXEC, __0x80_EXEC);
 }
 
 

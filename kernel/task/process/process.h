@@ -17,6 +17,8 @@ struct process *process_current();
 void* process_malloc(uint32_t size);
 void* process_free(void* base_addr);
 
+void process_init();
+
 
 enum
 {

@@ -50,6 +50,7 @@ struct task*    new_task(struct process* _process);
 struct task*    next_task();
 int8_t          close_task(struct task* _task);
 
+void task_switch(struct task* _task);
 void enter_task(struct reg* registers);
 void restore_gprs(struct reg* registers);
 void set_all_segments_to_user_data_segment();
