@@ -91,6 +91,9 @@ int vfs_fopen(const char* filename, uint8_t mode){
     struct path* file_path = parse_path(filename);
     char drive_id = file_path->drive_id;
 
+    // if invalid path provided.
+    if(drive_id < 'A' || drive_id > 'Z') return -ERR_FS_FOPEN_FAILED;
+
     struct disk* _disk = disk_get(drive_id);
 
     void* file_data = _disk->fs->open(_disk, file_path, mode);
