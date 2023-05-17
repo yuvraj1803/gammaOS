@@ -14,7 +14,20 @@
  + gShell - a super lightweight shell
 
 # Dependencies
- + QEMU
+ + build-essential
+ + bison
+ + flex
+ + libgmp3-dev
+ + libgmp3-dev
+ + libmpfr-dev
+ + texinfo
+ + libcloog-isl-dev
+ + libisl-dev
+ + **QEMU**
+ + i686-elf-gcc
+ + nasm
+
+ Note: Only QEMU is required for running. Rest are for building the kernel.
  
 # How to use?
  + Download the build from the releases.
