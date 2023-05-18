@@ -31,6 +31,7 @@ void __0x80_init()
     __0x80_add_function(__NR_3_MALLOC,__0x80_MALLOC);
     __0x80_add_function(__NR_4_FREE,  __0x80_FREE);
     __0x80_add_function(__NR_5_EXEC, __0x80_EXEC);
+    __0x80_add_function(__NR_6_EXIT, __0x80_EXIT);
 }
 
 

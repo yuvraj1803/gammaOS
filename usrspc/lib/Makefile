@@ -1,5 +1,5 @@
 OBJ = ./build/_start.s.o ./build/stdio.s.o ./build/stdlib.s.o ./build/stdio.o ./build/stdlib.o ./build/unistd.s.o \
-		./build/string.o
+		./build/string.o ./build/_exit.s.o
 INC = -I./include
 FLAGS = -g -ffreestanding -falign-jumps -falign-functions -falign-labels -falign-loops -fstrength-reduce -fomit-frame-pointer -finline-functions -Wno-unused-function -fno-builtin -Werror -Wno-unused-label -Wno-cpp -Wno-unused-parameter -Wno-unused-variable -Wno-unused-value  -nostdlib -nostartfiles -nodefaultlibs -Wall -O0 -Iinc
 
@@ -8,6 +8,9 @@ all: $(OBJ)
 
 ./build/_start.s.o: ./_start/_start.s
 	nasm -f elf ./_start/_start.s -o ./build/_start.s.o
+
+./build/_exit.s.o: ./_exit/_exit.s;
+	nasm -f elf ./_exit/_exit.s -o ./build/_exit.s.o
 
 ./build/stdio.s.o: ./stdio/stdio.s
 	nasm -f elf ./stdio/stdio.s  -o ./build/stdio.s.o

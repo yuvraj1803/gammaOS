@@ -19,9 +19,16 @@ void* __0x80_EXEC(struct interrupt_frame* iframe){
         return (void*) -ERR_PROCESS_CREATION_FAILED;
     }
 
+    process_switch(_process);
     task_switch(_process->task);
     enter_task(&_process->task->registers);
 
     return (void*) SUCCESS;
 
+}
+
+void* __0x80_EXIT(struct interrupt_frame* iframe){
+    process_kill(process_current());
+    process_back_to_gshell();
+    return (void*) SUCCESS;
 }

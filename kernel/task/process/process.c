@@ -164,6 +164,12 @@ void process_switch(struct process* _process){
     current_process = _process;
 }
 
+void process_back_to_gshell(){
+    process_switch(process_list[0]);
+    task_switch(process_list[0]->task);
+    enter_task(&process_list[0]->task->registers);
+}
+
 static int8_t process_map_memory(struct process* _process){
 
     // if file type is binary
@@ -312,7 +318,7 @@ int process_kill(struct process* _process){
 
     // free all data dynamically allocated by the process.
     for(int allocation = 0;allocation < PROCESS_MAX_PROCESS_MEM_ALLOCATIONS; allocation++){
-        process_free(_process->mem_allocations[allocation]);
+        if(_process->mem_allocations[allocation] != 0) _process->mem_allocations[allocation];
     }
 
     // mark pid as free to use

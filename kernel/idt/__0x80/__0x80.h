@@ -18,7 +18,8 @@ enum __0x80_COMMANDS{
     __NR_2_PUTCH,
     __NR_3_MALLOC,
     __NR_4_FREE,
-    __NR_5_EXEC
+    __NR_5_EXEC,
+    __NR_6_EXIT
     
 };
 
