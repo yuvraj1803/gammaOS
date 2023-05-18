@@ -16,6 +16,7 @@ struct process *process_new(const char *filename);
 struct process *process_current();
 void* process_malloc(uint32_t size);
 void* process_free(void* base_addr);
+int process_kill(struct process* _process);
 
 void process_init();
 

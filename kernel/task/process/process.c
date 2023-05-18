@@ -15,6 +15,7 @@
 #include "../../../mm/paging/paging.h"
 #include "../../../g-loader/g-loader.h"
 #include "../../../g-loader/elf/elf.h"
+#include "../task.h"
 
 // #include "../../../kernel/kernel.h"
 
@@ -299,5 +300,39 @@ void* process_free(void* base_addr){
     // we cant help it, just return NULL.
 
     return 0; 
+
+}
+
+
+int process_kill(struct process* _process){
+
+    if(_process == 0){
+        return -ERR_INVARG;
+    }
+
+    // free all data dynamically allocated by the process.
+    for(int allocation = 0;allocation < PROCESS_MAX_PROCESS_MEM_ALLOCATIONS; allocation++){
+        process_free(_process->mem_allocations[allocation]);
+    }
+
+    // mark pid as free to use
+    process_list[_process->pid] = 0;
+
+    // free the stack given to the process.
+    kfree(_process->stack);
+
+    if(_process->file_type == PROCESS_ELF_FILE){
+        gloader_close_elf(_process->elf_data);
+    }else if(_process->file_type == PROCESS_BIN_FILE){
+        kfree(_process->raw_data);
+    }
+
+    // kill the task associated with the process.
+    task_kill(_process->task);
+
+    kfree(_process);
+
+    return SUCCESS;
+
 
 }
