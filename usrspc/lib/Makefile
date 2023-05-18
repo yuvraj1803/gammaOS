@@ -1,4 +1,5 @@
-OBJ = ./build/_start.s.o ./build/stdio.s.o ./build/stdlib.s.o ./build/stdio.o ./build/stdlib.o ./build/unistd.s.o
+OBJ = ./build/_start.s.o ./build/stdio.s.o ./build/stdlib.s.o ./build/stdio.o ./build/stdlib.o ./build/unistd.s.o \
+		./build/string.o
 INC = -I./include
 FLAGS = -g -ffreestanding -falign-jumps -falign-functions -falign-labels -falign-loops -fstrength-reduce -fomit-frame-pointer -finline-functions -Wno-unused-function -fno-builtin -Werror -Wno-unused-label -Wno-cpp -Wno-unused-parameter -Wno-unused-variable -Wno-unused-value  -nostdlib -nostartfiles -nodefaultlibs -Wall -O0 -Iinc
 
@@ -22,6 +23,10 @@ all: $(OBJ)
 
 ./build/unistd.s.o:
 	nasm -f elf ./unistd/unistd.s -o ./build/unistd.s.o
+
+./build/string.o:
+	i686-elf-gcc $(INC) $(FLAGS) -std=gnu99 -c ./string/string.c -o ./build/string.o 
+
 
 clean:
 	rm -rf $(OBJ)
