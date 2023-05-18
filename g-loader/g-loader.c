@@ -112,3 +112,10 @@ int gloader_load_elf(char* filename, ELF_FILE** elf_file_out){
     return SUCCESS;
 
 }
+
+int gloader_close_elf(ELF_FILE* elf_file){
+    kfree(elf_file->data);
+    kfree(elf_file);
+
+    return SUCCESS;
+}

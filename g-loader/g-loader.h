@@ -11,6 +11,7 @@
 #include "elf/elf.h"
 
 int gloader_load_elf(char* filename, ELF_FILE** elf_file_out);
+int gloader_close_elf(ELF_FILE* elf_file);
 
 
 #endif
