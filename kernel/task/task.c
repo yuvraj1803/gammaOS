@@ -111,6 +111,11 @@ void gammaos_first_ever_task(){
 
 /**==========================================================================*/
 
+void task_kill(struct task* _task){
+    destroy_virtual_address_space(_task->task_space);
+    task_list_delete(_task);
+    kfree(_task);
+}
 void current_task_save_state(struct interrupt_frame* iframe){
 
     if(!cur_task){
