@@ -27,6 +27,8 @@
  + i686-elf-gcc
  + nasm
 
+ + Refer https://wiki.osdev.org/GCC_Cross-Compiler if you find difficulty installing the cross-compiler on your machine.
+
  Note: Only QEMU is required for running. Rest are for building the kernel.
  
 # How to use?
